@@ -4,9 +4,8 @@ namespace Web_API
 {
     public class AppDbContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-           
         }
 
         public DbSet<Models.Clinic> Clinics { get; set; }

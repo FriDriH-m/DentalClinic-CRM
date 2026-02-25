@@ -33,6 +33,7 @@ namespace Web_API.Models
         public int Salary { get; set; }
         public int Experience { get; set; }
         public int RoleId { get; set; }
+        public List<Appointment> Appointments { get; set; }
         public List<Clinic> Clinics { get; set; }
 
         [ForeignKey("RoleId")] public Role Role { get; set; }
@@ -48,6 +49,7 @@ namespace Web_API.Models
         public ClientStatus Status { get; set; }
         public int MoneySpent { get; set; }
         public int Bonuses { get; set; }
+        public List<Appointment> Appointments { get; set; }
     }
     public class Material 
     {

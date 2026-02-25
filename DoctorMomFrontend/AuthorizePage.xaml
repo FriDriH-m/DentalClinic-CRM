@@ -9,11 +9,6 @@
       Title="AuthorizePage">
 
     <Grid Background="Wheat">
-        <Button Content="Авторизация" 
-                HorizontalAlignment="Center" 
-                Margin="10,10,0,0" 
-                VerticalAlignment="Center" 
-                Width="300" Height="Auto" 
-                Click="Button_Click"/>
+        
     </Grid>
 </Page>
