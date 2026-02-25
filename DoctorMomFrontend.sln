@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36616.10 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorMomFrontend", "DoctorMomFrontend\DoctorMomFrontend.csproj", "{FE8D302C-E03C-41ED-8D22-1CDB16654409}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web API", "Web API\Web API.csproj", "{50BFF4A6-E798-4EAF-ACE2-26D51A8373A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE8D302C-E03C-41ED-8D22-1CDB16654409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE8D302C-E03C-41ED-8D22-1CDB16654409}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE8D302C-E03C-41ED-8D22-1CDB16654409}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE8D302C-E03C-41ED-8D22-1CDB16654409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50BFF4A6-E798-4EAF-ACE2-26D51A8373A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50BFF4A6-E798-4EAF-ACE2-26D51A8373A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50BFF4A6-E798-4EAF-ACE2-26D51A8373A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50BFF4A6-E798-4EAF-ACE2-26D51A8373A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E38C684-1EE1-458B-964E-4882A2106452}
+	EndGlobalSection
+EndGlobal

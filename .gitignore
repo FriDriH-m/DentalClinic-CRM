@@ -1,0 +1,18 @@
+# Игнорируем сборку
+[Bb]in/
+[Oo]bj/
+
+# Игнорируем настройки Visual Studio
+.vs/
+*.user
+*.suo
+
+# Игнорируем базы данных (сами файлы данных, не миграции!)
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+# Игнорируем секреты и логи
+appsettings.Development.json
+*.log
