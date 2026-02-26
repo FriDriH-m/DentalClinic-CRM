@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,15 +16,13 @@ using System.Windows.Shapes;
 namespace DoctorMomFrontend
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Логика взаимодействия для RegistrationPage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RegistrationPage : Page
     {
-        public MainWindow()
+        public RegistrationPage()
         {
             InitializeComponent();
-
-            MainFrame.Navigate(new RegistrationPage());
         }
     }
 }
