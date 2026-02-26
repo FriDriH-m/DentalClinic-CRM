@@ -1,0 +1,129 @@
+﻿<Page x:Class="DoctorMomFrontend.AnalystMainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="750" d:DesignWidth="1050"
+      Title="Рабочее место Аналитика">
+
+    <Page.Resources>
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#01579B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="#F0F8FF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#0277BD" CornerRadius="0,20,20,0">
+            <StackPanel Margin="20">
+                <TextBlock Text="🩺 DoctorMom" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,0,0,30"/>
+
+                <TextBlock Text="АНАЛИТИКА" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Button Content="📊 Общая сводка" Style="{StaticResource MenuButtonStyle}" Background="#01579B"/>
+                <Button Content="💰 Финансовый отчет" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="👨‍⚕️ Эффективность врачей" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="📈 Статистика услуг" Style="{StaticResource MenuButtonStyle}"/>
+
+                <Separator Background="#26C6DA" Margin="0,20"/>
+
+                <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Сводка и статистика" FontSize="26" FontWeight="Bold" Foreground="#01579B" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="1" Content="📥 Выгрузить в Excel" Padding="20,10" Background="#2E7D32" Foreground="White" FontWeight="Bold" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+
+            <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,20">
+                <Border Background="White" CornerRadius="10" Padding="15" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.1"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Выручка за месяц" Foreground="#78909C" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="RevenueText" Text="0 ₽" Foreground="#0277BD" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" CornerRadius="10" Padding="15" Margin="10,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.1"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Проведено приемов" Foreground="#78909C" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="AppointmentsCountText" Text="0" Foreground="#0277BD" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" CornerRadius="10" Padding="15" Margin="10,0,0,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.1"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Топ услуга" Foreground="#78909C" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="TopServiceText" Text="Загрузка..." Foreground="#0277BD" FontSize="18" FontWeight="Bold" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <Border Grid.Row="2" Background="White" CornerRadius="15" Padding="15">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.1"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Детализация отчета" FontSize="16" FontWeight="SemiBold" Foreground="#455A64" Margin="0,0,0,10"/>
+
+                    <DataGrid x:Name="ReportGrid" Grid.Row="1" AutoGenerateColumns="True" 
+                              CanUserAddRows="False" Background="White" BorderThickness="0"
+                              GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                              RowHeight="35" FontSize="14" HeadersVisibility="Column">
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>
