@@ -5,10 +5,52 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:DoctorMomFrontend"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AuthorizePage">
+      d:DesignHeight="800" d:DesignWidth="1000"
+      Title="Авторизация">
 
-    <Grid Background="Wheat">
-        
+    <Grid Background="#F0F8FF">
+
+        <Border Width="350" Height="400" Background="White" 
+                CornerRadius="15" Padding="30"
+                VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
+
+            <StackPanel VerticalAlignment="Center">
+
+                <TextBlock Text="DoctorMom" FontSize="28" FontWeight="Bold" 
+                           Foreground="#0277BD" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                <TextBlock Text="Вход в систему" FontSize="16" Foreground="#546E7A" 
+                           HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+                <TextBlock Text="Логин" FontSize="14" Foreground="#0277BD" Margin="0,0,0,5" FontWeight="SemiBold"/>
+                <TextBox x:Name="LoginTextBox" FontSize="16" Padding="10" 
+                         BorderBrush="#B3E5FC" BorderThickness="2" 
+                         Background="#FAFAFA" Margin="0,0,0,15"/>
+
+                <TextBlock Text="Пароль" FontSize="14" Foreground="#0277BD" Margin="0,0,0,5" FontWeight="SemiBold"/>
+                <PasswordBox x:Name="PasswordBox" FontSize="16" Padding="10" 
+                             BorderBrush="#B3E5FC" BorderThickness="2" 
+                             Background="#FAFAFA" Margin="0,0,0,25"/>
+
+                <Button x:Name="LoginButton" Content="ВОЙТИ" FontSize="16" FontWeight="Bold"
+                        Foreground="White" Background="#0288D1" 
+                        BorderThickness="0" Padding="12" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <TextBlock x:Name="ErrorTextBlock" Foreground="#E53935" FontSize="13" 
+                           HorizontalAlignment="Center" Margin="0,15,0,0" 
+                           TextWrapping="Wrap" Visibility="Collapsed"
+                           Text="Неверный логин или пароль"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>
