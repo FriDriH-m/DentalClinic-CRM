@@ -15,7 +15,7 @@ namespace Web_API.Configurations
             builder.Property(s => s.Description)
                 .HasMaxLength(500);
 
-            builder.Property(s => s.Price)
+            builder.Property(s => s.BasePrice)
                 .IsRequired()
                 .HasDefaultValue(0);
         }

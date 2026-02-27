@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Web_API;
@@ -11,9 +12,11 @@ using Web_API;
 namespace Web_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227115204_AddBonusesTables")]
+    partial class AddBonusesTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,6 +38,21 @@ namespace Web_API.Migrations
                     b.HasIndex("ServicesId");
 
                     b.ToTable("AppointmentService");
+                });
+
+            modelBuilder.Entity("ClinicEmployee", b =>
+                {
+                    b.Property<int>("ClinicsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmployeesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ClinicsId", "EmployeesId");
+
+                    b.HasIndex("EmployeesId");
+
+                    b.ToTable("ClinicEmployee");
                 });
 
             modelBuilder.Entity("Web_API.Models.Appointment", b =>
@@ -76,8 +94,6 @@ namespace Web_API.Migrations
 
                     b.HasIndex("ClinicId");
 
-                    b.HasIndex("Date");
-
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("Appointments");
@@ -95,22 +111,16 @@ namespace Web_API.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Quantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.HasKey("AppointmentId", "MaterialId");
 
-                    b.HasIndex("AppointmentId");
-
                     b.HasIndex("MaterialId");
 
-                    b.ToTable("AppointmentMaterial");
+                    b.ToTable("AppointmentMaterials", (string)null);
                 });
 
             modelBuilder.Entity("Web_API.Models.Bonuse", b =>
@@ -125,9 +135,7 @@ namespace Web_API.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Amount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasColumnType("integer");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("integer");
@@ -138,8 +146,6 @@ namespace Web_API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
-
-                    b.HasIndex("ExpiredAt");
 
                     b.ToTable("Bonuses");
                 });
@@ -169,22 +175,16 @@ namespace Web_API.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Discount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("TotalPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
 
                     b.HasIndex("ClientId");
-
-                    b.HasIndex("Date");
 
                     b.ToTable("Checks");
                 });
@@ -196,6 +196,11 @@ namespace Web_API.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Bonuses")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -274,31 +279,6 @@ namespace Web_API.Migrations
                     b.ToTable("Clinics");
                 });
 
-            modelBuilder.Entity("Web_API.Models.ClinicEmployee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClinicId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("EmployeeId", "ClinicId");
-
-                    b.ToTable("ClinicEmployee");
-                });
-
             modelBuilder.Entity("Web_API.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -350,13 +330,7 @@ namespace Web_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PhoneNumber");
-
-                    b.HasIndex("Position");
-
                     b.HasIndex("ServiceId");
-
-                    b.HasIndex("FirstName", "SecondName");
 
                     b.ToTable("Employees");
                 });
@@ -398,8 +372,6 @@ namespace Web_API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
-
-                    b.HasIndex("Name");
 
                     b.ToTable("Materials");
                 });
@@ -462,6 +434,21 @@ namespace Web_API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ClinicEmployee", b =>
+                {
+                    b.HasOne("Web_API.Models.Clinic", null)
+                        .WithMany()
+                        .HasForeignKey("ClinicsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Web_API.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Web_API.Models.Appointment", b =>
                 {
                     b.HasOne("Web_API.Models.Client", "Client")
@@ -511,7 +498,7 @@ namespace Web_API.Migrations
             modelBuilder.Entity("Web_API.Models.Bonuse", b =>
                 {
                     b.HasOne("Web_API.Models.Client", "Client")
-                        .WithMany("Bonuses")
+                        .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -536,25 +523,6 @@ namespace Web_API.Migrations
                     b.Navigation("Appointment");
 
                     b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("Web_API.Models.ClinicEmployee", b =>
-                {
-                    b.HasOne("Web_API.Models.Clinic", "Clinic")
-                        .WithMany("ClinicEmployees")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web_API.Models.Employee", "Employee")
-                        .WithMany("ClinicEmployees")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Clinic");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Web_API.Models.Employee", b =>
@@ -594,20 +562,11 @@ namespace Web_API.Migrations
             modelBuilder.Entity("Web_API.Models.Client", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("Bonuses");
-                });
-
-            modelBuilder.Entity("Web_API.Models.Clinic", b =>
-                {
-                    b.Navigation("ClinicEmployees");
                 });
 
             modelBuilder.Entity("Web_API.Models.Employee", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("ClinicEmployees");
                 });
 
             modelBuilder.Entity("Web_API.Models.Material", b =>

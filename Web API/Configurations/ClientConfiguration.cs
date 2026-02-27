@@ -38,9 +38,6 @@ namespace Web_API.Configurations
             builder.Property(c => c.MoneySpent)
                 .HasDefaultValue(0);
 
-            builder.Property(c => c.Bonuses)
-                .HasDefaultValue(0);
-
             builder.Property(c => c.Status)
                 .HasDefaultValue(ClientStatus.Regular);
         }

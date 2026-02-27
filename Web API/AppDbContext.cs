@@ -9,12 +9,14 @@ namespace Web_API
         }
 
         public DbSet<Models.Clinic> Clinics { get; set; }
-        public DbSet<Models.Role> Roles { get; set; }
         public DbSet<Models.Employee> Employees { get; set; }
         public DbSet<Models.Client> Clients { get; set; }
         public DbSet<Models.Material> Materials { get; set; }
         public DbSet<Models.Appointment> Appointments { get; set; }
-        public DbSet<Models.Service> AppointmentMaterials { get; set; }
+        public DbSet<Models.Service> Services { get; set; }
+        public DbSet<Models.AppointmentMaterial> AppointmentMaterial { get; set; }
+        public DbSet<Models.Check> Checks { get; set; }
+        public DbSet<Models.Bonuse> Bonuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

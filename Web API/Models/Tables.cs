@@ -1,9 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Web_API.Models
 {
     public enum ClientStatus { Regular = 0, Loyal = 1, Premium = 2 }
     public enum AppointmentStatus { Pending = 0, Completed = 1, Cancelled = 2 }
+    public class ClinicEmployee
+    {
+        public int Id { get; set; } 
+
+        public int EmployeeId { get; set; }
+        public int ClinicId { get; set; }
+
+        [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
+        [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
+    }
+    public class AppointmentMaterial
+    {
+        public int Id { get; set; }
+        public int AppointmentId { get; set; }
+        public int MaterialId { get; set; }
+        [ForeignKey("AppointmentId")] public Appointment Appointment { get; set; }
+        [ForeignKey("MaterialId")] public Material Material { get; set; }
+
+        public int Quantity { get; set; }
+        public decimal Price { get; set; } //чтобы при подорожании материала не менять стоимость уже созданных записей
+    }
     public class Clinic
     {
         public int Id { get; set; }
@@ -11,13 +33,7 @@ namespace Web_API.Models
         public string PostalCode { get; set; }
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
-        public List<Employee> Employees { get; set; }
-    }
-    public class Role
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public List<Employee> Employees { get; set; }   
+        public List<ClinicEmployee> ClinicEmployees { get; set; }
     }
     public class Employee
     {
@@ -27,16 +43,12 @@ namespace Web_API.Models
         public string PhoneNumber { get; set; }
         public string Position { get; set; }
         public string Info { get; set; }
-        public string Login { get; set; }
-        public string PasswordHash { get; set; }
         public int Age { get; set; }
         public int Salary { get; set; }
         public int Experience { get; set; }
-        public int RoleId { get; set; }
+        public string DbUsername { get; set; }
         public List<Appointment> Appointments { get; set; }
-        public List<Clinic> Clinics { get; set; }
-
-        [ForeignKey("RoleId")] public Role Role { get; set; }
+        public List<ClinicEmployee> ClinicEmployees { get; set; }
     }
     public class Client
     {
@@ -48,20 +60,30 @@ namespace Web_API.Models
         public string Info { get; set; }
         public ClientStatus Status { get; set; }
         public int MoneySpent { get; set; }
-        public int Bonuses { get; set; }
         public List<Appointment> Appointments { get; set; }
+        public List<Bonuse> Bonuses { get; set; }
+    }   
+    public class Bonuse
+    {
+        public int Id { get; set; }
+        public DateTime AddedAt { get; set; }
+        public DateTime ExpiredAt { get; set; }
+        public int Amount { get; set; }
+        public int ClientId { get; set; }
+        [ForeignKey("ClientId")] public Client Client { get; set; }
     }
     public class Material 
     {
         public int Id { get; set; }
         public string Name { get; set; }    
         public string Description { get; set; }
-        public int Price { get; set; }
+        public decimal Price { get; set; }
+        public decimal PurchasePrice { get; set; }
         public int Count { get; set; }
         public int ClinicId { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
 
-        public List<Appointment> Appointments { get; set; } 
+        public List<AppointmentMaterial> AppointmentMaterials { get; set; }
     }
 
     public class Appointment
@@ -69,22 +91,43 @@ namespace Web_API.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public AppointmentStatus Status { get; set; }
-        public int TotalPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
         public int ClientId { get; set; }
         public int ClinicId { get; set; }        
         public int EmployeeId { get; set; }
         [ForeignKey("ClientId")] public Client Client { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
         [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
-        public List<Material> Materials { get; set; }
         public List<Service> Services { get; set; }
+        public List<AppointmentMaterial> AppointmentMaterials { get; set; }
+    }
+
+    public class Check
+    {
+        public int Id { get; set; }
+        public string CheckNumber { get; set; }        
+        public DateTime Date { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
+        public decimal BonusesUsed { get; set; }
+        public int AppointmentId { get; set; }
+        public int ClientId { get; set; }
+        [ForeignKey("AppointmentId")] public Appointment Appointment { get; set; }
+        [ForeignKey("ClientId")] public Client Client { get; set; }
     }
     public class Service
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Price { get; set; }
+        public int DurationMinutes { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int ClinicId { get; set; }
+        public decimal BasePrice { get; set; }
+
+        [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
         public List<Employee> Employees { get; set; }
         public List<Appointment> Appointments { get; set; } 
     }

@@ -8,9 +8,6 @@ namespace Web_API.Configurations
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            builder.HasIndex(c => c.Login)
-                .IsUnique();
-
             builder.Property(c => c.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -30,9 +27,9 @@ namespace Web_API.Configurations
             builder.Property(c => c.Info)
                 .HasMaxLength(300);
 
-            builder.Property(c => c.PasswordHash)
-                .IsRequired()
-                .HasMaxLength(255);
+            builder.HasIndex(e => e.PhoneNumber);
+            builder.HasIndex(e => e.Position);
+            builder.HasIndex(e => new { e.FirstName, e.SecondName });
         }
     }
 }
