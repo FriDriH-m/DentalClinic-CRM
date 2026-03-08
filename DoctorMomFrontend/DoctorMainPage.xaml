@@ -97,7 +97,7 @@
                         <DataGridTemplateColumn Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="✍️ Внести материалы" Padding="10,5" Background="#0288D1" Foreground="White" FontWeight="Bold" Cursor="Hand" Click="AddMaterials_Click">
+                                    <Button Content="✍️ Внести материалы" Padding="10,5" Background="#0288D1" Foreground="White" FontWeight="Bold" Cursor="Hand">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="5"/>

@@ -41,25 +41,61 @@
                             <TextBox x:Name="AgeBox" Padding="8" BorderBrush="#B3E5FC"/>
                         </StackPanel>
                     </UniformGrid>
-
-                    <TextBlock Text="Роль в системе" Foreground="#0277BD" Margin="0,10,0,5" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="RoleComboBox" Padding="8" BorderBrush="#B3E5FC" Margin="0,0,0,10">
-                        <ComboBoxItem Content="Администратор"/>
-                        <ComboBoxItem Content="Аналитик"/>
-                        <ComboBoxItem Content="Мастер"/>
-                        <ComboBoxItem Content="Менеджер"/>
-                    </ComboBox>
-
                     <UniformGrid Columns="2" Margin="0,0,0,10">
                         <StackPanel Margin="0,0,5,0">
-                            <TextBlock Text="Зарплата" Foreground="#0277BD" Margin="0,0,0,5"/>
-                            <TextBox x:Name="SalaryBox" Padding="8" BorderBrush="#B3E5FC"/>
+                            <TextBlock Text="Роль в системе" Foreground="#0277BD" Margin="0,10,0,5" FontWeight="SemiBold"/>
+                            <ComboBox x:Name="RoleComboBox"
+                                    Padding="8" 
+                                    BorderBrush="#B3E5FC" 
+                                    Margin="0,0,0,10" SelectedValuePath="Tag">
+                                <ComboBoxItem Content="Администратор" Tag="role_admin"/>
+                                <ComboBoxItem Content="Аналитик" Tag="role_analyst"/>
+                                <ComboBoxItem Content="Доктор" Tag="role_doctor"/>
+                                <ComboBoxItem Content="Менеджер" Tag="role_manager"/>
+                            </ComboBox>
                         </StackPanel>
-                        <StackPanel Margin="5,0,0,0">
-                            <TextBlock Text="Стаж (лет)" Foreground="#0277BD" Margin="0,0,0,5"/>
-                            <TextBox x:Name="ExperienceBox" Padding="8" BorderBrush="#B3E5FC"/>
+                        <StackPanel x:Name="SpecializationStackPanel" 
+                                    Margin="0,0,0,0"
+                                    Visibility="Collapsed">
+                            <TextBlock Text="Позиция" Foreground="#0277BD" Margin="0,10,0,5" FontWeight="SemiBold"/>
+                            <ComboBox x:Name="SpecializationComboBox"
+                                      Padding="8" 
+                                      BorderBrush="#B3E5FC" 
+                                      SelectedValuePath="Tag"
+                                      Margin="0,0,0,10">
+                                <ComboBoxItem Content="Стоматолог-терапевт" Tag="Стоматолог-терапевт"/>
+                                <ComboBoxItem Content="Стоматолог-хирург" Tag="Стоматолог-хирург"/>
+                                <ComboBoxItem Content="Стоматолог-ортопед" Tag="Стоматолог-ортопед"/>
+                                <ComboBoxItem Content="Ортодонт" Tag="Ортодонт"/>
+                                <ComboBoxItem Content="Пародонтолог" Tag="Пародонтолог"/>
+                                <ComboBoxItem Content="Эндодонтист" Tag="Эндодонтист"/>
+                                <ComboBoxItem Content="Детский стоматолог" Tag="Детский стоматолог"/>
+                                <ComboBoxItem Content="Стоматолог-гигиенист" Tag="Стоматолог-гигиенист"/>
+                            </ComboBox>
                         </StackPanel>
                     </UniformGrid>
+
+
+                    <UniformGrid Columns="2" Margin="0,0,0,10">
+                        <UniformGrid Columns="2" Margin="0,0,0,10">
+                            <StackPanel Margin="0,0,5,0">
+                                <TextBlock Text="Зарплата" Foreground="#0277BD" Margin="0,0,0,5"/>
+                                <TextBox x:Name="SalaryBox" Padding="8" BorderBrush="#B3E5FC"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,0">
+                                <TextBlock Text="Стаж (лет)" Foreground="#0277BD" Margin="0,0,0,5"/>
+                                <TextBox x:Name="ExperienceBox" Padding="8" BorderBrush="#B3E5FC"/>
+                            </StackPanel>
+                        </UniformGrid>
+                        <StackPanel Margin="5,0,0,0">
+                            <TextBlock Text="Клиника" Foreground="#0277BD" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="ClinicComboBox"
+                                      Padding="8"
+                                      BorderBrush="#B3E5FC"     
+                                      Margin="0,0,0,10"/>
+                        </StackPanel>
+                    </UniformGrid>
+                    
 
                     <TextBlock Text="Краткая информация" Foreground="#0277BD" Margin="0,10,0,5" FontWeight="SemiBold"/>
                     <TextBox x:Name="InfoBox" Padding="8" BorderBrush="#B3E5FC" 

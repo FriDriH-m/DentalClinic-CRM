@@ -35,13 +35,20 @@ namespace Web_API.Models
         public int EmployeesCount { get; set; }
         public List<ClinicEmployee> ClinicEmployees { get; set; }
     }
+    public class DoctorCategorySkill
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public int CategoryId{ get; set; }
+        [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
+    }
     public class Employee
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string SecondName { get; set; }
         public string PhoneNumber { get; set; }
-        public string Position { get; set; }
+        public string Specialization { get; set; }
         public string Info { get; set; }
         public int Age { get; set; }
         public int Salary { get; set; }
@@ -49,6 +56,7 @@ namespace Web_API.Models
         public string DbUsername { get; set; }
         public List<Appointment> Appointments { get; set; }
         public List<ClinicEmployee> ClinicEmployees { get; set; }
+        public List<DoctorCategorySkill> DoctorCategorySkills { get; set; }
     }
     public class Client
     {
@@ -126,9 +134,7 @@ namespace Web_API.Models
         public string CategoryName { get; set; }
         public int ClinicId { get; set; }
         public decimal BasePrice { get; set; }
-
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
-        public List<Employee> Employees { get; set; }
         public List<Appointment> Appointments { get; set; } 
     }
 }

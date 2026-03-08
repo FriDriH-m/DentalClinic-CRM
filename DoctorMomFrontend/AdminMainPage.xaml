@@ -54,7 +54,7 @@
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,25">
                 <TextBlock Text="Управление сотрудниками" FontSize="26" FontWeight="Bold" Foreground="#01579B"/>
-                <Button Content="+ Добавить сотрудника" Margin="30,0,0,0" Padding="15,5" 
+                <Button x:Name ="AddEmployyeButton" Content="+ Добавить сотрудника" Margin="30,0,0,0" Padding="15,5" 
                         Background="#0288D1" Foreground="White" FontWeight="Bold">
                     <Button.Resources>
                         <Style TargetType="Border">

@@ -20,7 +20,7 @@ namespace Web_API.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
-            builder.Property(c => c.Position)
+            builder.Property(c => c.Specialization)
                 .IsRequired()
                 .HasMaxLength(30);
 
@@ -28,7 +28,7 @@ namespace Web_API.Configurations
                 .HasMaxLength(300);
 
             builder.HasIndex(e => e.PhoneNumber);
-            builder.HasIndex(e => e.Position);
+            builder.HasIndex(e => e.Specialization);
             builder.HasIndex(e => new { e.FirstName, e.SecondName });
         }
     }

@@ -1,5 +1,19 @@
-﻿namespace Web_API.Utils
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
+
+namespace DoctorMomFrontend.Utils
 {
+    public static class EmployeeSession
+    {
+        public static int EmployeeId { get; set; }
+        public static string Role { get; set; }
+
+        public static void Clear()
+        {
+            EmployeeId = 0;
+            Role = null;
+        }
+    }
     public record SessionInfo(int EmployeeId, string Role);
     public record LoginUserDTO(string Login, string Password);
     public class RegistrationUserDTO
@@ -20,7 +34,7 @@
         public int Experience { get; set; }
         public string DbUsername { get; set; }
     }
-    public class DatabaseUserDTO
+    public class DatabaseUserDTO 
     {
         public string DbUsername { get; set; }
         public string DbPassword { get; set; }

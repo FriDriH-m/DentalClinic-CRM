@@ -11,7 +11,7 @@ namespace DoctorMomFrontend
         {
             InitializeComponent();
 
-            MainFrame.Navigate(new ManagerMainPage());
+            MainFrame.Navigate(new AuthorizePage());
         }
     }
 }
