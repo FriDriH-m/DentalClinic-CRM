@@ -35,6 +35,7 @@ namespace Web_API.Middlewares
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 throw;
             }
             finally

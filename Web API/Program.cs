@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Web_API;
+using Web_API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<RlsConfigMiddleware>();
 
 app.UseAuthorization();
 

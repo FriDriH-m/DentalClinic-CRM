@@ -70,20 +70,23 @@
                 </Border.Effect>
 
                 <DataGrid x:Name="EmployeesGrid" AutoGenerateColumns="False" 
+                          ItemsSource="{Binding Employees}"
                           CanUserAddRows="False" Background="White" BorderThickness="0"
                           GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
                           RowHeight="40" FontSize="14">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2*"/>
-                        <DataGridTextColumn Header="Роль" Binding="{Binding RoleName}" Width="*"/>
-                        <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="*"/>
+                        <DataGridTextColumn Header="Роль" Binding="{Binding Specialization}" Width="*"/>
+                        <DataGridTextColumn Header="Логин" Binding="{Binding DbUsername}" Width="*"/>
                         <DataGridTextColumn Header="Стаж" Binding="{Binding Experience}" Width="80"/>
                         <DataGridTemplateColumn Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="Edit" Foreground="#0288D1" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
-                                        <Button Content="Del" Foreground="#E53935" Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="5,0,0,0"/>
+                                        <Button Content="Del" Click="DeleteButton_Click"
+                                                Foreground="#E53935" Background="Transparent" 
+                                                BorderThickness="0" Cursor="Hand" Margin="5,0,0,0"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

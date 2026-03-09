@@ -10,6 +10,7 @@
     }
     public class EmployeeTableDTO
     {
+        public string FullName => $"{SecondName} {FirstName}".Trim();
         public string FirstName { get; set; }
         public string SecondName { get; set; }
         public string PhoneNumber { get; set; }

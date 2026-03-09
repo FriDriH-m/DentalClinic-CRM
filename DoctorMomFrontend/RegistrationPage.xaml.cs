@@ -1,7 +1,7 @@
 ﻿using DoctorMomFrontend.Utils;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Security.Claims;
+using DoctorMomFrontend.Extensions;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,6 +67,7 @@ namespace DoctorMomFrontend
 
             string? roleContent = roleSelectedItem?.Content?.ToString();
             string? specializatiionContent = SpecializationComboBox.SelectedValue?.ToString();
+            string clinicAddress;
 
             if (string.IsNullOrWhiteSpace(FirstNameBox.Text))
             {
@@ -99,8 +100,7 @@ namespace DoctorMomFrontend
 
             using (HttpClient client = new HttpClient())
             {
-                string roleValue;
-                string clinicAddress;
+                client.AddHeaders();
                 try
                 {
                     var employeeTableDTO = new EmployeeTableDTO
@@ -117,19 +117,13 @@ namespace DoctorMomFrontend
                         DbUsername = LoginBox.Text
                     };
 
-                    if (RoleComboBox.SelectedItem is ComboBoxItem selectedItem)
-                    {
-                        roleValue = selectedItem.Tag.ToString();
-                    }
-                    else return;
-
                     clinicAddress = ClinicComboBox.SelectedItem as string;
 
                     var databaseUserDTO = new DatabaseUserDTO
                     {
                         DbUsername = LoginBox.Text,
                         DbPassword = PassBox.Password,
-                        Role = roleValue
+                        Role = roleSelectedItem.Tag.ToString()
                     };
 
                     RegistrationUserDTO message = new RegistrationUserDTO
@@ -139,6 +133,7 @@ namespace DoctorMomFrontend
                         ClinicLocation = clinicAddress
                     };
 
+                    
                     var request = await client.PostAsJsonAsync(ApiUrl + "auth/register", message);
 
                     if (request.IsSuccessStatusCode)

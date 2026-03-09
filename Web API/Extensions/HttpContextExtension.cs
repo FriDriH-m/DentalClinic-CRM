@@ -1,6 +1,8 @@
-﻿namespace Web_API.Extensions
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+
+namespace Web_API.Extensions
 {
-    public static class HttpContextExtensions
+    public static class HttpContextExtension
     {
         public static string GetCurrentEmployeeId(this HttpContext context)
         {
@@ -18,5 +20,5 @@
             }
             return null;
         }
-    }
+    }    
 }

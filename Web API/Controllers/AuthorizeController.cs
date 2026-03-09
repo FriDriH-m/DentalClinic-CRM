@@ -77,10 +77,6 @@ namespace Web_API.Controllers
             DatabaseUserDTO user = userInfo.DatabaseUserDTO;
             EmployeeTableDTO employee = userInfo.EmployeeTableDTO;
 
-            if (_context.Employees.Any(e => e.DbUsername == user.DbUsername)) return BadRequest("Логин занят");
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
                 var clinic = await _context.Clinics
@@ -119,9 +115,15 @@ namespace Web_API.Controllers
                 };
 
                 await _context.ClinicEmployees.AddAsync(a);
-                
+                               
 
                 int[] categories = GetCategoryIdsForSpecialization(newEmployee.Specialization);
+
+                if (categories.Length <= 0)
+                {
+                    await _context.SaveChangesAsync();
+                    return Ok("Успех");
+                }
 
                 for (int i = 0; i < categories.Length; i++)
                 {
@@ -135,12 +137,9 @@ namespace Web_API.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 return BadRequest(ex.Message);
             }           
 

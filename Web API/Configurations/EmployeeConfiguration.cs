@@ -27,9 +27,13 @@ namespace Web_API.Configurations
             builder.Property(c => c.Info)
                 .HasMaxLength(300);
 
+            builder.Property(c => c.DbUsername)
+                .IsRequired();
+
             builder.HasIndex(e => e.PhoneNumber);
             builder.HasIndex(e => e.Specialization);
             builder.HasIndex(e => new { e.FirstName, e.SecondName });
+            builder.HasIndex(e => e.DbUsername).IsUnique();
         }
     }
 }

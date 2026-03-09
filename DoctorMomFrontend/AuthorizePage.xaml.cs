@@ -19,10 +19,7 @@ namespace DoctorMomFrontend
 
             LoginButton.Click += Login;
         }
-        private async void Login(object s, RoutedEventArgs e)
-        {
-            await LoginAsync();
-        }
+        private async void Login(object s, RoutedEventArgs e) => await LoginAsync();
         private async Task LoginAsync()
         {
             using (HttpClient client = new HttpClient())
@@ -30,8 +27,6 @@ namespace DoctorMomFrontend
                 try
                 {
                     LoginUserDTO loginInfo = new LoginUserDTO(LoginTextBox.Text, PasswordBox.Password);
-
-                    MessageBox.Show(LoginTextBox.Text + PasswordBox.Password);
 
                     var response = await client.PostAsJsonAsync(ApiUrl + "auth/login", loginInfo);
 
