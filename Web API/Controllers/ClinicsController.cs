@@ -18,10 +18,29 @@ namespace Web_API.Controllers
         [HttpDelete("{clinicId}")]
         public async Task<IActionResult> DeleteClinic(int clinicId)
         {
-            await _context.Clients.Where(c => c.Id == clinicId).ExecuteDeleteAsync();
+            try
+            {
+                await _context.Clinics.Where(c => c.Id == clinicId).ExecuteDeleteAsync();
 
-            await _context.SaveChangesAsync();
-            return Ok();
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Ошибка при сохранении в БД (нарушение constraints, и т.д.)
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                return BadRequest($"Database error: {innerMessage}");
+            }
+            catch (Npgsql.PostgresException ex)
+            {
+                // Специфичная ошибка PostgreSQL (permission denied, duplicate key, etc.)
+                return BadRequest($"PostgreSQL error: {ex.MessageText} (Code: {ex.SqlState})");
+            }
+            catch (Exception ex)
+            {
+                // Непредвиденная ошибка
+                return StatusCode(500, $"Internal error: {ex.Message}");
+            }
         }
         [HttpPost]
         public async Task<IActionResult> RegisterClinic([FromBody] ClinicTableDTO clinic)
@@ -81,6 +100,32 @@ namespace Web_API.Controllers
             {
                 return BadRequest("Не удалось получить адреса клиник");
             }            
+        }
+        [HttpGet("services")]
+        public async Task<IActionResult> GetAllServices(int clinicId)
+        {
+            try
+            {
+               
+                var services = await _context.Services
+                    .Include(c => c.Clinic)
+                    .Select(s => new ServiceDTO
+                    {
+                        Name = s.Name,
+                        Description = s.Description,
+                        DurationMinutes = s.DurationMinutes,
+                        BasePrice = s.BasePrice,
+                        CategoryName = s.CategoryName,
+                        ClinicId = s.ClinicId,
+                        ClinicAddress = s.Clinic.Location
+                    })
+                    .ToListAsync();
+                return Ok(services);
+            }
+            catch
+            {
+                return BadRequest("Не удалось получить услуги клиник");
+            }
         }
         [HttpGet("services/{clinicId}")]
         public async Task<IActionResult> GetClinicsServices(int clinicId)

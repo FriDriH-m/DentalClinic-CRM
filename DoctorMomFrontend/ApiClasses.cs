@@ -39,6 +39,8 @@ namespace DoctorMomFrontend.Utils
         public int DurationMinutes { get; set; }
         public string CategoryName { get; set; }
         public decimal BasePrice { get; set; }
+        public int ClinicId { get; set; }
+        public string ClinicAddress { get; set; }
     }
     public class EmployeeTableDTO
     {

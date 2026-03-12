@@ -19,28 +19,35 @@ namespace DoctorMomFrontend
         public AdminMainPage()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await LoadEmployeesAsync();
-            AddEmployeeButton.Click += OpenEmployeeRegistration;
-            GiveEmployeeAccessButton.Click += OpenCertificateManagementPage;
             DataContext = this;
-            EmployyesPageButton.Click += LoadEmployeesPage;
-            ClinicsPageButton.Click += LoadClinicsPage;
+            Loaded += async (s, e) => await LoadEmployeesAsync();
+
+            AddEmployeeButton.Click += OpenEmployeeRegistration;
+            GiveEmployeeAccessButton.Click += OpenCertificateManagementPage;            
+            EmployyesPageButton.Click += OpenEmployeesPage;
+            ClinicsPageButton.Click += OpenClinicsPage;
+            ServicesPageButton.Click += OpenServicesPage;
         }
 
-        private void LoadClinicsPage(object sender, RoutedEventArgs e)
+        private void OpenServicesPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminServicesPage());
+        }
+        private void OpenClinicsPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminClinicsPage());
         }
-
-        private void LoadEmployeesPage(object sender, RoutedEventArgs e)
+        private void OpenEmployeesPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminMainPage());
         }
-
-
         private void OpenCertificateManagementPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new CertificateManagementPage());
+        }
+        private void OpenEmployeeRegistration(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistrationPage());
         }
 
         private async Task LoadEmployeesAsync()
@@ -90,9 +97,6 @@ namespace DoctorMomFrontend
                 }
             }
         }
-        private void OpenEmployeeRegistration(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new RegistrationPage());
-        }
+        
     }
 }

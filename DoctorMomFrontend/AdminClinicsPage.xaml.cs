@@ -22,24 +22,26 @@ namespace DoctorMomFrontend
             InitializeComponent();
             DataContext = this;
             Loaded += async (s, e) => await LoadClinicsAsync();
-            EmployyesPageButton.Click += LoadEmployeesPage;
-            ClinicsPageButton.Click += LoadClinicsPage;
             AddClinicButton.Click += LoadRegistrationClinicPage;
-
+            EmployyesPageButton.Click += OpenEmployeesPage;
+            ClinicsPageButton.Click += OpenClinicsPage;
+            ServicesPageButton.Click += OpenServicesPage;
         }
-
-        private void LoadRegistrationClinicPage(object sender, RoutedEventArgs e)
+        private void OpenServicesPage(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new RegistrationClinicPage());
+            NavigationService.Navigate(new AdminServicesPage());
         }
-
-        private void LoadClinicsPage(object sender, RoutedEventArgs e)
+        private void OpenClinicsPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminClinicsPage());
         }
-        private void LoadEmployeesPage(object sender, RoutedEventArgs e)
+        private void OpenEmployeesPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminMainPage());
+        }
+        private void LoadRegistrationClinicPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistrationClinicPage());
         }
 
         public async void DeleteClinicButton_Click(object sender, RoutedEventArgs e)
