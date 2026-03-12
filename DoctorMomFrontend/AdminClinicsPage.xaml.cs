@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,8 +24,15 @@ namespace DoctorMomFrontend
             Loaded += async (s, e) => await LoadClinicsAsync();
             EmployyesPageButton.Click += LoadEmployeesPage;
             ClinicsPageButton.Click += LoadClinicsPage;
+            AddClinicButton.Click += LoadRegistrationClinicPage;
 
         }
+
+        private void LoadRegistrationClinicPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistrationClinicPage());
+        }
+
         private void LoadClinicsPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminClinicsPage());
@@ -34,9 +42,32 @@ namespace DoctorMomFrontend
             NavigationService.Navigate(new AdminMainPage());
         }
 
-        public void DeleteButton_Click(object sender, RoutedEventArgs e)
+        public async void DeleteClinicButton_Click(object sender, RoutedEventArgs e)
         {
-            
+            var button = sender as Button;
+            var clinic = button?.DataContext as ClinicTableDTO;
+
+            if (clinic == null)
+            {
+                MessageBox.Show("Не удалось удалить клинику");
+                return;
+            }
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.AddHeaders();
+
+                var response = await client.DeleteAsync(ApiUrl + $"clinics/{clinic.Id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    Clinics.Remove(clinic);
+                    MessageBox.Show("Клиника удалена из БД");
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось удалить клинику");
+                }
+            }
         }
         private async Task LoadClinicsAsync()
         {

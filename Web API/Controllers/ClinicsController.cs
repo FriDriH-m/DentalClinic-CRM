@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Web_API.Models;
 using Web_API.Utils;
 
 namespace Web_API.Controllers
@@ -13,6 +14,37 @@ namespace Web_API.Controllers
         public ClinicsController(AppDbContext context) 
         {
             _context = context;
+        }
+        [HttpDelete("{clinicId}")]
+        public async Task<IActionResult> DeleteClinic(int clinicId)
+        {
+            await _context.Clients.Where(c => c.Id == clinicId).ExecuteDeleteAsync();
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegisterClinic([FromBody] ClinicTableDTO clinic)
+        {
+            try
+            {
+                Clinic newClinic = new Clinic
+                {
+                    Location = clinic.Location,
+                    PostalCode = clinic.PostalCode,
+                    PhoneNumber = clinic.PhoneNumber,
+                    EmployeesCount = 0
+                };
+                await _context.Clinics.AddAsync(newClinic);
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
         public async Task<IActionResult> GetClinics()

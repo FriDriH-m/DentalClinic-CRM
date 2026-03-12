@@ -1,0 +1,60 @@
+﻿<Page x:Class="DoctorMomFrontend.RegistrationClinicPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DoctorMomFrontend"
+      mc:Ignorable="d" 
+      d:DesignHeight="850" d:DesignWidth="1000"
+      Title="Регистрация нового сотрудника">
+
+    <Grid Background="#F0F8FF">
+
+        <Button x:Name="BackButton" 
+                HorizontalAlignment="Left" VerticalAlignment="Top"
+                Content="НАЗАД" Margin="15,15,0,0"
+                Background="#0288D1" Foreground="White" FontWeight="Bold" 
+                Padding="15. 5" >
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Border Width="500" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    Background="White" CornerRadius="15" Padding="30" Margin="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.1" Color="Black"/>
+                </Border.Effect>
+
+                <StackPanel>
+                    <TextBlock Text="Регистрация клиники" FontSize="24" FontWeight="Bold" 
+                               Foreground="#0277BD" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <StackPanel Margin="0,0,5,0">
+                        <TextBlock Text="Адрес" Foreground="#0277BD" Margin="0,0,0,5"/>
+                        <TextBox x:Name="LocationBox" Padding="8" BorderBrush="#B3E5FC"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,0">
+                        <TextBlock Text="Почтовый индекс" Foreground="#0277BD" Margin="0,0,0,5"/>
+                        <TextBox x:Name="PostalCodeBox" Padding="8" BorderBrush="#B3E5FC"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,5,0">
+                        <TextBlock Text="Номер телефона" Foreground="#0277BD" Margin="0,0,0,5"/>
+                        <TextBox x:Name="PhoneNumberBox" Padding="8" BorderBrush="#B3E5FC"/>
+                    </StackPanel>
+
+                    <Button x:Name="RegisterButton" Content="ЗАРЕГИСТРИРОВАТЬ" Margin="0,25,0,0"
+                            Background="#0288D1" Foreground="White" FontWeight="Bold" 
+                            Padding="15" >
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </Grid>
+</Page>
