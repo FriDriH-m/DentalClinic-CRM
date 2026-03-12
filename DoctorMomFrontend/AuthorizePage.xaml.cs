@@ -37,6 +37,7 @@ namespace DoctorMomFrontend
                         // Сохраняем в сессию
                         EmployeeSession.EmployeeId = result.EmployeeId;
                         EmployeeSession.Role = result.Role;
+                        EmployeeSession.ClinicsIds = result.ClinicsId;
 
                         Page? targetPage = EmployeeSession.Role switch
                         {
@@ -50,7 +51,11 @@ namespace DoctorMomFrontend
 
                         NavigationService.Navigate(targetPage);
                     }
-                    else MessageBox.Show(response.Content.ToString());
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(error);
+                    }
                 }
                 catch (Exception ex) 
                 {

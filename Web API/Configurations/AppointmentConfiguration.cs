@@ -19,6 +19,9 @@ namespace Web_API.Configurations
             builder.Property(a => a.TotalPrice)
                 .HasDefaultValue(0);
 
+            builder.Property(a => a.IsClosed)
+                .HasDefaultValue(false);
+
             builder
                 .HasOne(a => a.Employee)
                 .WithMany(e => e.Appointments)

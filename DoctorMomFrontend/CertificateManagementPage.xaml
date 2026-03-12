@@ -1,0 +1,123 @@
+﻿<Page x:Class="DoctorMomFrontend.CertificateManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      d:DesignHeight="700" d:DesignWidth="1000"
+      Title="Выдача сертификатов">
+
+    <Page.Resources>
+        <!-- Menu Button Style -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#01579B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Simple Rounded Button for "Issue Certificate" -->
+        <Style x:Key="IssueCertButton" TargetType="Button">
+            <Setter Property="Background" Value="#0288D1"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0277BD"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="#F0F8FF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Sidebar -->
+        <Border Grid.Column="0" Background="#0277BD" CornerRadius="0,20,20,0">
+            <StackPanel Margin="20">
+                <TextBlock Text="DoctorMom" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,0,0,30"/>
+                <TextBlock Text="АДМИНИСТРИРОВАНИЕ" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Button Content="Сотрудники" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Филиалы" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Услуги и склад" Style="{StaticResource MenuButtonStyle}"/>
+                <Separator Background="#26C6DA" Margin="0,20"/>
+                <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Column="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <TextBlock Grid.Row="0" Text="Выдача сертификатов" 
+                       FontSize="22" FontWeight="Bold" Foreground="#01579B" 
+                       Margin="0,0,0,25"/>
+
+            <!-- DataGrid: only Name, Role, IsCertified, and Issue button -->
+            <Border Grid.Row="1" Background="White" CornerRadius="15" Padding="15">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.1"/>
+                </Border.Effect>
+
+                <DataGrid x:Name="EmployeesGrid"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          Background="White"
+                          BorderThickness="0"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#F0F0F0"
+                          RowHeight="40"
+                          FontSize="14">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="1.5*"/>
+                        <DataGridTextColumn Header="Специализация" Binding="{Binding Specialization}" Width="1.3*"/>
+                        <DataGridCheckBoxColumn Header="Сертификат" 
+                                                Binding="{Binding IsCertified, Mode=TwoWay}" 
+                                                Width="0.7*"/>
+                        <DataGridTemplateColumn Header="Действие" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="GiveCertificate_Click"
+                                            Content="Выдать"                                            
+                                            Style="{StaticResource IssueCertButton}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

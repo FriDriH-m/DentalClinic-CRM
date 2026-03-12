@@ -21,6 +21,9 @@ namespace Web_API.Configurations
             builder.Property(m => m.Price)
                 .HasDefaultValue(0);
 
+            builder.Property(m => m.IsCertifiedMaterial)
+                .HasDefaultValue(false);
+
             builder.HasIndex(m => m.ClinicId);
             builder.HasIndex(m => m.Name);
         }

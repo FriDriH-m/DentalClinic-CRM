@@ -27,7 +27,7 @@ namespace Web_API.Configurations
             builder.HasOne(am => am.Material)
                 .WithMany(m => m.AppointmentMaterials)
                 .HasForeignKey(am => am.MaterialId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

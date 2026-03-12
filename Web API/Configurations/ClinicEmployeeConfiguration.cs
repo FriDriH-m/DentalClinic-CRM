@@ -21,7 +21,41 @@ namespace Web_API.Configurations
             builder.HasOne(ce => ce.Clinic)
                 .WithMany(c => c.ClinicEmployees)
                 .HasForeignKey(ce => ce.ClinicId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+    public class ServiceMaterialsConfiguration : IEntityTypeConfiguration<ServiceMaterials>
+    {
+        public void Configure(EntityTypeBuilder<ServiceMaterials> builder)
+        {
+            builder
+                .HasOne(sm => sm.Service)
+                .WithMany(s => s.Materials)
+                .HasForeignKey(sm => sm.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
+            builder
+                .HasOne(sm => sm.Material)
+                .WithMany(m => m.Services)
+                .HasForeignKey(sm => sm.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+    public class DoctorMaterialAccessConfiguration : IEntityTypeConfiguration<DoctorMaterialAccess>
+    {
+        public void Configure(EntityTypeBuilder<DoctorMaterialAccess> builder)
+        {
+            builder
+                .HasOne(dma => dma.Employee)
+                .WithMany(e => e.MaterialsAccess)
+                .HasForeignKey(dma => dma.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasOne(dma => dma.Material)
+                .WithMany(m => m.DoctorsAccess)
+                .HasForeignKey(dma => dma.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

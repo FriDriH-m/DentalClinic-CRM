@@ -7,6 +7,7 @@ namespace DoctorMomFrontend.Utils
     {
         public static int EmployeeId { get; set; }
         public static string Role { get; set; }
+        public static int[] ClinicsIds { get; set; }
 
         public static void Clear()
         {
@@ -14,13 +15,30 @@ namespace DoctorMomFrontend.Utils
             Role = null;
         }
     }
-    public record SessionInfo(int EmployeeId, string Role);
+    public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
     public record LoginUserDTO(string Login, string Password);
+    public class ClinicTableDTO 
+    {
+        public int Id { get; set; }
+        public string Location { get; set; }
+        public string PostalCode { get; set; }
+        public string PhoneNumber { get; set; }
+        public int EmployeesCount { get; set; }
+    }
+
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }
         public DatabaseUserDTO DatabaseUserDTO { get; set; }
         public string ClinicLocation { get; set; }
+    }
+    public class ServiceDTO
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int DurationMinutes { get; set; }
+        public string CategoryName { get; set; }
+        public decimal BasePrice { get; set; }
     }
     public class EmployeeTableDTO
     {
@@ -30,6 +48,7 @@ namespace DoctorMomFrontend.Utils
         public string PhoneNumber { get; set; }
         public string Specialization { get; set; }
         public string Info { get; set; }
+        public bool IsCertified { get; set; }
         public int Age { get; set; }
         public int Salary { get; set; }
         public int Experience { get; set; }

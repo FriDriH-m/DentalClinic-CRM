@@ -23,6 +23,12 @@ namespace DoctorMomFrontend
         public ManagerMainPage()
         {
             InitializeComponent();
+            NewAppointmentButton.Click += OpenAppointmentsPage;
+        }
+
+        private void OpenAppointmentsPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new ManagerAppointmentsPage());
         }
     }
 }

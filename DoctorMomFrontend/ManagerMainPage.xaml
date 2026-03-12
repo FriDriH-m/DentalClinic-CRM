@@ -76,7 +76,7 @@
             </Grid>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
-                <Button Content="+ Новая запись" Padding="20,10" Background="#0288D1" Foreground="White" FontWeight="Bold" Cursor="Hand">
+                <Button x:Name="NewAppointmentButton" Content="+ Новая запись" Padding="20,10" Background="#0288D1" Foreground="White" FontWeight="Bold" Cursor="Hand">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -129,7 +129,5 @@
                 </DataGrid>
             </Border>
         </Grid>
-    </Grid>
-
-    
+    </Grid>    
 </Page>

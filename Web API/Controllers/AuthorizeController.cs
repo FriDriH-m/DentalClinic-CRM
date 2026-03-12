@@ -27,14 +27,24 @@ namespace Web_API.Controllers
         {
             (bool, string?) connectedEmployee = await TryConnectToDb(userName.Login, userName.Password);
 
-            if (!connectedEmployee.Item1 || connectedEmployee.Item2 == null) return Unauthorized("Неверный логин или пароль");
+            if (!connectedEmployee.Item1 || connectedEmployee.Item2 == null)
+            {
+                return Unauthorized("Неверный логин или пароль");
+            }
 
             var employee = _context.Employees.FirstOrDefault(e => e.DbUsername == userName.Login);
 
-            if (employee == null) return Unauthorized("Пользователт не найден, ошибка базы данных");
+            if (employee == null)
+            {
+                return Unauthorized("Пользователт не найден, ошибка базы данных");
+            }
 
+            var ClinicsIds = await _context.ClinicEmployees
+                .Where(c => c.EmployeeId == employee.Id)
+                .Select(c => c.ClinicId)
+                .ToArrayAsync();
 
-            return Ok(new SessionInfo(employee.Id, connectedEmployee.Item2));
+            return Ok(new SessionInfo(employee.Id, connectedEmployee.Item2, ClinicsIds));
         }
 
         private async Task<(bool, string?)> TryConnectToDb(string username, string password)
@@ -106,7 +116,6 @@ namespace Web_API.Controllers
                 await _context.Employees.AddAsync(newEmployee);
 
                 await _context.SaveChangesAsync();
-
                 
                 ClinicEmployee a = new ClinicEmployee
                 {
@@ -115,7 +124,6 @@ namespace Web_API.Controllers
                 };
 
                 await _context.ClinicEmployees.AddAsync(a);
-                               
 
                 int[] categories = GetCategoryIdsForSpecialization(newEmployee.Specialization);
 

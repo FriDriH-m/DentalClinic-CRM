@@ -22,6 +22,50 @@ namespace Web_API.Controllers
             _context = context;
             _configuration = configuration;
         }
+        [HttpGet("doctors")]
+        public async Task<IActionResult> GetAllDoctors()
+        {
+            try
+            {
+                var doctors = await _context.DoctorCategorySkills
+                .Include(e => e.Employee)
+                .Select(e => e.Employee)
+                .Distinct()
+                .Select(e => new EmployeeTableDTO
+                {
+                    FirstName = e.FirstName,
+                    SecondName = e.SecondName,
+                    PhoneNumber = e.PhoneNumber,
+                    Specialization = e.Specialization,
+                    Info = e.Info,
+                    Age = e.Age,
+                    Salary = e.Salary,
+                    Experience = e.Experience,
+                    DbUsername = e.DbUsername
+                }).ToListAsync();
+
+                return Ok(doctors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("doctors")]
+        public async Task<IActionResult> GiveCertificate(int employeeId)
+        {
+            try
+            {
+                
+                return Ok();
+            }
+            catch
+            {
+                throw;
+            }
+            
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {

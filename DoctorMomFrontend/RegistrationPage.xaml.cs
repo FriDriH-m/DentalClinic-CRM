@@ -18,8 +18,14 @@ namespace DoctorMomFrontend
         {
             InitializeComponent();
             RegisterButton.Click += RegisterEmployee;
+            BackButton.Click += OpenMainWindow;
             RoleComboBox.SelectionChanged += CheckCurrentSelect;
             LoadClinicsAddresses();
+        }
+
+        private void OpenMainWindow(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminMainPage());
         }
 
         private async void LoadClinicsAddresses()

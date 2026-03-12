@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Web_API;
@@ -11,9 +12,11 @@ using Web_API;
 namespace Web_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260310144943_UpdateMaterialsAccess")]
+    partial class UpdateMaterialsAccess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,11 +62,6 @@ namespace Web_API.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("IsClosed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
@@ -318,39 +316,11 @@ namespace Web_API.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaterialId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("MaterialId");
 
                     b.ToTable("DoctorCategorySkills");
-                });
-
-            modelBuilder.Entity("Web_API.Models.DoctorMaterialAccess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("MaterialId");
-
-                    b.ToTable("DoctorMaterialAccesses");
                 });
 
             modelBuilder.Entity("Web_API.Models.Employee", b =>
@@ -376,13 +346,15 @@ namespace Web_API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<bool>("HasSpecialLicanse")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Info")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
-
-                    b.Property<bool>("IsCertified")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -507,29 +479,6 @@ namespace Web_API.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("Web_API.Models.ServiceMaterials", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaterialId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("ServiceMaterials");
-                });
-
             modelBuilder.Entity("AppointmentService", b =>
                 {
                     b.HasOne("Web_API.Models.Appointment", null)
@@ -583,7 +532,7 @@ namespace Web_API.Migrations
                     b.HasOne("Web_API.Models.Material", "Material")
                         .WithMany("AppointmentMaterials")
                         .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -626,7 +575,7 @@ namespace Web_API.Migrations
                     b.HasOne("Web_API.Models.Clinic", "Clinic")
                         .WithMany("ClinicEmployees")
                         .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Web_API.Models.Employee", "Employee")
@@ -648,30 +597,7 @@ namespace Web_API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web_API.Models.Material", null)
-                        .WithMany("DoctorCategorySkills")
-                        .HasForeignKey("MaterialId");
-
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("Web_API.Models.DoctorMaterialAccess", b =>
-                {
-                    b.HasOne("Web_API.Models.Employee", "Employee")
-                        .WithMany("MaterialsAccess")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web_API.Models.Material", "Material")
-                        .WithMany("DoctorsAccess")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Material");
                 });
 
             modelBuilder.Entity("Web_API.Models.Material", b =>
@@ -694,25 +620,6 @@ namespace Web_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Clinic");
-                });
-
-            modelBuilder.Entity("Web_API.Models.ServiceMaterials", b =>
-                {
-                    b.HasOne("Web_API.Models.Material", "Material")
-                        .WithMany("Services")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Web_API.Models.Service", "Service")
-                        .WithMany("Materials")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Material");
-
-                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Web_API.Models.Appointment", b =>
@@ -739,24 +646,11 @@ namespace Web_API.Migrations
                     b.Navigation("ClinicEmployees");
 
                     b.Navigation("DoctorCategorySkills");
-
-                    b.Navigation("MaterialsAccess");
                 });
 
             modelBuilder.Entity("Web_API.Models.Material", b =>
                 {
                     b.Navigation("AppointmentMaterials");
-
-                    b.Navigation("DoctorCategorySkills");
-
-                    b.Navigation("DoctorsAccess");
-
-                    b.Navigation("Services");
-                });
-
-            modelBuilder.Entity("Web_API.Models.Service", b =>
-                {
-                    b.Navigation("Materials");
                 });
 #pragma warning restore 612, 618
         }

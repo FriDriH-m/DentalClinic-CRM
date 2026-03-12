@@ -50,6 +50,7 @@ namespace Web_API.Models
         public string PhoneNumber { get; set; }
         public string Specialization { get; set; }
         public string Info { get; set; }
+        public bool? IsCertified { get; set; }
         public int Age { get; set; }
         public int Salary { get; set; }
         public int Experience { get; set; }
@@ -57,6 +58,7 @@ namespace Web_API.Models
         public List<Appointment> Appointments { get; set; }
         public List<ClinicEmployee> ClinicEmployees { get; set; }
         public List<DoctorCategorySkill> DoctorCategorySkills { get; set; }
+        public List<DoctorMaterialAccess> MaterialsAccess { get; set; }
     }
     public class Client
     {
@@ -85,6 +87,7 @@ namespace Web_API.Models
         public int Id { get; set; }
         public string Name { get; set; }    
         public string Description { get; set; }
+        public bool IsCertifiedMaterial { get; set; }
         public decimal Price { get; set; }
         public decimal PurchasePrice { get; set; }
         public int Count { get; set; }
@@ -92,6 +95,9 @@ namespace Web_API.Models
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
 
         public List<AppointmentMaterial> AppointmentMaterials { get; set; }
+        public List<DoctorCategorySkill> DoctorCategorySkills { get; set; }
+        public List<ServiceMaterials> Services { get; set; }
+        public List<DoctorMaterialAccess> DoctorsAccess { get; set; }
     }
 
     public class Appointment
@@ -101,6 +107,7 @@ namespace Web_API.Models
         public AppointmentStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
+        public bool IsClosed {  get; set; }
         public int ClientId { get; set; }
         public int ClinicId { get; set; }        
         public int EmployeeId { get; set; }
@@ -135,6 +142,27 @@ namespace Web_API.Models
         public int ClinicId { get; set; }
         public decimal BasePrice { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
-        public List<Appointment> Appointments { get; set; } 
+        public List<Appointment> Appointments { get; set; }
+        public List<ServiceMaterials> Materials { get; set; }
+    }
+
+    public class ServiceMaterials 
+    {
+        public int Id { get; set; }
+        public int ServiceId { get; set; }
+        public int MaterialId { get; set; }
+
+        [ForeignKey("ServiceId")] public Service Service { get; set; }
+        [ForeignKey("MaterialId")] public Material Material { get; set; }
+    }
+
+    public class DoctorMaterialAccess
+    {
+        public int Id { get; set; }
+        public int EmployeeId { get; set; }
+        public int MaterialId { get; set; }
+
+        [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
+        [ForeignKey("MaterialId")] public Material Material { get; set; }
     }
 }

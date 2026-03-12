@@ -20,9 +20,29 @@ namespace DoctorMomFrontend
         {
             InitializeComponent();
             Loaded += async (s, e) => await LoadEmployeesAsync();
-            AddEmployyeButton.Click += OpenEmployeeRegistration;
+            AddEmployeeButton.Click += OpenEmployeeRegistration;
+            GiveEmployeeAccessButton.Click += OpenCertificateManagementPage;
             DataContext = this;
+            EmployyesPageButton.Click += LoadEmployeesPage;
+            ClinicsPageButton.Click += LoadClinicsPage;
         }
+
+        private void LoadClinicsPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminClinicsPage());
+        }
+
+        private void LoadEmployeesPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminMainPage());
+        }
+
+
+        private void OpenCertificateManagementPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new CertificateManagementPage());
+        }
+
         private async Task LoadEmployeesAsync()
         {
             using (HttpClient client = new HttpClient())
@@ -42,6 +62,10 @@ namespace DoctorMomFrontend
                     MessageBox.Show($"Ошибка загрузки: {error}");
                 }
             }
+        }
+        public async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
         public async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
