@@ -5,17 +5,32 @@ namespace Web_API.Utils
 {
     public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
     public record LoginUserDTO(string Login, string Password);
+    public record RegisterService(ServiceDTO service, int[] materialsId);
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }
         public DatabaseUserDTO DatabaseUserDTO { get; set; }
         public string ClinicLocation { get; set; }
     }
+    public class MaterialDTO
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsCertifiedMaterial { get; set; }
+        public decimal Price { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public int Count { get; set; }
+        public int ClinicId { get; set; }
+    }
+    
     public class ServiceDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int DurationMinutes { get; set; }
+        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public decimal BasePrice { get; set; }
         public int ClinicId { get; set; }

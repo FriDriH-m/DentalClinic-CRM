@@ -15,6 +15,7 @@ namespace DoctorMomFrontend
     public partial class AdminMainPage : Page
     {
         public ObservableCollection<EmployeeTableDTO> Employees { get; set; } = new();
+
         private readonly string ApiUrl = "https://localhost:7141/api/";
         public AdminMainPage()
         {
@@ -28,7 +29,7 @@ namespace DoctorMomFrontend
             ClinicsPageButton.Click += OpenClinicsPage;
             ServicesPageButton.Click += OpenServicesPage;
         }
-
+        
         private void OpenServicesPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminServicesPage());

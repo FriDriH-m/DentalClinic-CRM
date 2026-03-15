@@ -18,6 +18,11 @@ namespace Web_API.Configurations
             builder.Property(s => s.BasePrice)
                 .IsRequired()
                 .HasDefaultValue(0);
+
+            builder.HasMany(s => s.Materials)
+                .WithOne(sm => sm.Service)
+                .HasForeignKey(sm => sm.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

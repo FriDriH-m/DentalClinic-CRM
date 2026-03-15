@@ -105,12 +105,12 @@ namespace Web_API.Controllers
         public async Task<IActionResult> GetAllServices(int clinicId)
         {
             try
-            {
-               
+            {               
                 var services = await _context.Services
                     .Include(c => c.Clinic)
                     .Select(s => new ServiceDTO
                     {
+                        Id = s.Id,
                         Name = s.Name,
                         Description = s.Description,
                         DurationMinutes = s.DurationMinutes,
@@ -125,6 +125,61 @@ namespace Web_API.Controllers
             catch
             {
                 return BadRequest("Не удалось получить услуги клиник");
+            }
+        }
+        [HttpPost("services")]
+        public async Task<IActionResult> AddNewService([FromBody] RegisterService service)
+        {
+            try
+            {
+                ServiceDTO serviceDTO = service.service;
+                Service newService = new Service
+                {
+                    Name = serviceDTO.Name,
+                    Description = serviceDTO.Description,
+                    DurationMinutes = serviceDTO.DurationMinutes,
+                    BasePrice = serviceDTO.BasePrice,
+                    CategoryName = serviceDTO.CategoryName,
+                    CategoryId = serviceDTO.CategoryId,
+                    ClinicId = serviceDTO.ClinicId,
+                };
+
+                await _context.Services.AddAsync(newService);
+                await _context.SaveChangesAsync();
+
+                for (int i = 0; i < service.materialsId.Length; i++)
+                {
+                    ServiceMaterials link = new ServiceMaterials
+                    {
+                        MaterialId = service.materialsId[i],
+                        ServiceId = newService.Id
+                    };
+                    await _context.ServiceMaterials.AddAsync(link);
+                }
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            }
+        }
+        [HttpDelete("services/{serviceId}")]
+        public async Task<IActionResult> DeleteService(int serviceId)
+        {
+            try
+            {
+                await _context.Services
+                    .Where(s => s.Id == serviceId)
+                    .ExecuteDeleteAsync();
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("services/{clinicId}")]

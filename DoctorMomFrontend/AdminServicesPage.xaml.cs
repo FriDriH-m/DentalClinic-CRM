@@ -1,21 +1,11 @@
 ﻿using DoctorMomFrontend.Extensions;
 using DoctorMomFrontend.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DoctorMomFrontend
 {
@@ -36,7 +26,20 @@ namespace DoctorMomFrontend
             ServicesPageButton.Click += OpenServicesPage;
             ClinicComboBox.SelectionChanged += UpdateServiceListClinic;
             CategoryComboBox.SelectionChanged += UpdateServiceListCategory;
+            AddServiceButton.Click += OpenAddServicePage;
+            OpenMaterialsPageButton.Click += OpenMaterialsPage;
         }
+
+        private void OpenMaterialsPage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminMaterialsPage());
+        }
+
+        private void OpenAddServicePage(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistrationServicePage());
+        }
+
         private void ApplyFilters()
         {
             var selectedClinic = ClinicComboBox.SelectedItem as string;
@@ -48,6 +51,41 @@ namespace DoctorMomFrontend
                 .ToList();
 
             ServicesListBox.ItemsSource = filteredServices;
+        }
+        private async void DeleteServiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var selectedService = button.DataContext as ServiceDTO;
+
+            if (selectedService != null)
+            {
+                var result = MessageBox.Show($"Вы уверены, что хотите удалить {selectedService.Name}  id: {selectedService.Id}?",
+                                             "Подтверждение", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        client.AddHeaders();
+
+                        var response = await client.DeleteAsync(ApiUrl + "clinics/services/" + selectedService.Id);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            MessageBox.Show("Услуга удалена");
+                        }
+                        else 
+                        {
+                            var error = await response.Content.ReadAsStringAsync();
+                            MessageBox.Show(error);
+                        }
+                    }
+                }
+            }
+        }
+        // позже добавлю возможность редактировать услугу
+        private void RedactServiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var selectedService = button.DataContext as ServiceDTO;
         }
         private void UpdateServiceListCategory(object sender, SelectionChangedEventArgs e)
         {

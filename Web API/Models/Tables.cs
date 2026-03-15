@@ -15,6 +15,15 @@ namespace Web_API.Models
         [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
     }
+    public class AppointmentService
+    {
+        public int AppointmentId { get; set; }
+        public int ServiceId { get; set; }
+        [ForeignKey("AppointmentId")] public Appointment Appointment { get; set; }
+        [ForeignKey("ServiceId")] public Service Service { get; set; }
+
+        public decimal Price { get; set; } //чтобы при подорожании материала не менять стоимость уже созданных записей
+    }
     public class AppointmentMaterial
     {
         public int Id { get; set; }
@@ -114,7 +123,7 @@ namespace Web_API.Models
         [ForeignKey("ClientId")] public Client Client { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
         [ForeignKey("EmployeeId")] public Employee Employee { get; set; }
-        public List<Service> Services { get; set; }
+        public List<AppointmentService> AppointmentService { get; set; }
         public List<AppointmentMaterial> AppointmentMaterials { get; set; }
     }
 
@@ -142,10 +151,10 @@ namespace Web_API.Models
         public int ClinicId { get; set; }
         public decimal BasePrice { get; set; }
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
-        public List<Appointment> Appointments { get; set; }
+        public List<AppointmentService> AppointmentService { get; set; }
         public List<ServiceMaterials> Materials { get; set; }
     }
-
+    
     public class ServiceMaterials 
     {
         public int Id { get; set; }

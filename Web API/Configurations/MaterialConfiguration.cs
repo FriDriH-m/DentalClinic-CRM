@@ -24,6 +24,12 @@ namespace Web_API.Configurations
             builder.Property(m => m.IsCertifiedMaterial)
                 .HasDefaultValue(false);
 
+            builder.HasMany(m => m.Services)
+                .WithOne(s => s.Material)
+                .HasForeignKey(s => s.MaterialId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             builder.HasIndex(m => m.ClinicId);
             builder.HasIndex(m => m.Name);
         }

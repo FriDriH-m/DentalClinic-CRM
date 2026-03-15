@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 
 namespace DoctorMomFrontend.Utils
@@ -25,7 +26,18 @@ namespace DoctorMomFrontend.Utils
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
     }
-
+    public class MaterialDTO 
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsCertifiedMaterial { get; set; }
+        public decimal Price { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public int Count { get; set; }
+        public int ClinicId { get; set; }
+    }
+    public record RegisterService(ServiceDTO service, int[] materialsId);
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }
@@ -34,9 +46,11 @@ namespace DoctorMomFrontend.Utils
     }
     public class ServiceDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int DurationMinutes { get; set; }
+        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public decimal BasePrice { get; set; }
         public int ClinicId { get; set; }
