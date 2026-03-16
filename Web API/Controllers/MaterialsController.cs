@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Web_API.Models;
 using Web_API.Utils;
 
 namespace Web_API.Controllers
@@ -8,14 +11,52 @@ namespace Web_API.Controllers
     public class MaterialsController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public MaterialsController(AppDbContext context) 
+        public MaterialsController(AppDbContext context)
         {
             _context = context;
         }
-        [HttpPost]
-        public IActionResult AddNewMaterial([FromBody] MaterialDTO material)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateMaterial(int id, [FromBody] MaterialDTO materialDTO)
         {
+            try
+            {
+                if (id != materialDTO.Id) return BadRequest("ID не совпадает");
 
+                var material = await _context.Materials.FindAsync(id);
+                if (material == null) return NotFound();
+
+                material.Name = materialDTO.Name;
+                material.Description = materialDTO.Description;
+                material.Count = materialDTO.Count;
+                material.Price = materialDTO.Price;
+                material.PurchasePrice = materialDTO.PurchasePrice;
+                material.IsCertifiedMaterial = materialDTO.IsCertifiedMaterial;
+
+                await _context.SaveChangesAsync();
+                return Ok(material);
+            }
+            catch 
+            {
+                return BadRequest();
+            }
+            
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddNewMaterial([FromBody] MaterialDTO material)
+        {
+            Material newMaterial = new Material
+            {
+                Name = material.Name,
+                Description = material.Description,
+                Price = material.Price,
+                PurchasePrice = material.PurchasePrice,
+                Count = material.Count,
+                IsCertifiedMaterial = material.IsCertifiedMaterial,
+                ClinicId = material.ClinicId,
+            };
+
+            await _context.Materials.AddAsync(newMaterial);
+            await _context.SaveChangesAsync();
             return Ok();
         }
         [HttpGet]
@@ -24,6 +65,7 @@ namespace Web_API.Controllers
             try
             {
                 var materials = _context.Materials
+                    .Include(m => m.Clinic)
                     .Select(m => new MaterialDTO
                     {
                         Id = m.Id,
@@ -33,7 +75,8 @@ namespace Web_API.Controllers
                         Price = m.Price,
                         PurchasePrice = m.PurchasePrice,
                         Count = m.Count,
-                        ClinicId = m.ClinicId
+                        ClinicId = m.ClinicId,
+                        ClinicAddress = m.Clinic.Location
                     })
                     .ToList();
 
@@ -49,8 +92,9 @@ namespace Web_API.Controllers
         {
             try
             {
-                var materials = _context.Materials
+                var materials =  _context.Materials
                     .Where(m => m.ClinicId == clinicId)
+                    .Include(m => m.Clinic)
                     .Select(m => new MaterialDTO
                     {
                         Id = m.Id,
@@ -60,7 +104,8 @@ namespace Web_API.Controllers
                         Price = m.Price,
                         PurchasePrice = m.PurchasePrice,
                         Count = m.Count,
-                        ClinicId = m.ClinicId
+                        ClinicId = m.ClinicId,
+                        ClinicAddress = m.Clinic.Location
                     })
                     .ToList();
 

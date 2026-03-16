@@ -104,7 +104,6 @@ namespace Web_API.Models
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
 
         public List<AppointmentMaterial> AppointmentMaterials { get; set; }
-        public List<DoctorCategorySkill> DoctorCategorySkills { get; set; }
         public List<ServiceMaterials> Services { get; set; }
         public List<DoctorMaterialAccess> DoctorsAccess { get; set; }
     }

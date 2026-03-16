@@ -65,9 +65,9 @@
             <StackPanel Margin="20">
                 <TextBlock Text="DoctorMom" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,0,0,30"/>
                 <TextBlock Text="АДМИНИСТРИРОВАНИЕ" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
-                <Button Content="Сотрудники" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Филиалы" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Услуги и склад" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="EmployeesPageButton" Content="Сотрудники" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="ClinicsPageButton" Content="Филиалы" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="ServicesPageButton" Content="Услуги и склад" Style="{StaticResource MenuButtonStyle}"/>
                 <Separator Background="#26C6DA" Margin="0,20"/>
                 <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
             </StackPanel>

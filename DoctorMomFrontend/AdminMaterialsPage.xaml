@@ -86,7 +86,7 @@
                               Width="250"
                               Padding="0, 8"
                               BorderBrush="#B3E5FC"     
-                              Margin="0,0,0,0"/>
+                              Margin="0,0,0,0" DisplayMemberPath="Location" SelectedValuePath="Id"/>
                 </StackPanel>
                 <StackPanel Margin="5,0,0,0">
                     <TextBlock TextAlignment="Center" Text="Поиск" Foreground="#0277BD" Margin="0,0,0,5"/>
@@ -94,8 +94,7 @@
                              Width="250"
                              Padding="8, 8"
                              BorderBrush="#B3E5FC"
-                             Margin="0,0,0,0"
-                             />
+                             Margin="0,0,0,0"/>
                 </StackPanel>
             </StackPanel>
 
@@ -166,7 +165,8 @@
                                                 Padding="5,2"
                                                 Background="SkyBlue"
                                                 Margin="0,0,0,10"
-                                                Visibility="Collapsed">
+                                                Visibility="Visible"
+                                                Click="RedactMaterialButton_Click">
                                             <Button.Resources>
                                                 <Style TargetType="Border">
                                                     <Setter Property="CornerRadius" Value="3"/>

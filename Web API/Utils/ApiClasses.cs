@@ -21,6 +21,7 @@ namespace Web_API.Utils
         public decimal Price { get; set; }
         public decimal PurchasePrice { get; set; }
         public int Count { get; set; }
+        public string ClinicAddress { get; set; }
         public int ClinicId { get; set; }
     }
     
@@ -57,6 +58,7 @@ namespace Web_API.Utils
     }
     public class EmployeeTableDTO
     {
+        public int Id { get; set; }
         public string FullName => $"{SecondName} {FirstName}".Trim();
         public string FirstName { get; set; }
         public string SecondName { get; set; }

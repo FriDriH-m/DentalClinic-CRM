@@ -1,10 +1,8 @@
 ﻿using DoctorMomFrontend.Extensions;
 using DoctorMomFrontend.Utils;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 

@@ -33,6 +33,7 @@ namespace Web_API.Controllers
                 .Distinct()
                 .Select(e => new EmployeeTableDTO
                 {
+                    Id = e.Id,
                     FirstName = e.FirstName,
                     SecondName = e.SecondName,
                     PhoneNumber = e.PhoneNumber,
@@ -51,19 +52,21 @@ namespace Web_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("doctors")]
+        [HttpPatch("doctors/{employeeId}")]
         public async Task<IActionResult> GiveCertificate(int employeeId)
         {
             try
             {
-                
+                var doctor = await _context.Employees.FindAsync(employeeId);
+                doctor.IsCertified = true;
+
+                await _context.SaveChangesAsync();
                 return Ok();
             }
             catch
             {
-                throw;
-            }
-            
+                return BadRequest();    
+            }            
         }
 
         [HttpGet]
@@ -73,6 +76,7 @@ namespace Web_API.Controllers
                 await _context.Employees
                             .Select(e => new EmployeeTableDTO
                             {
+                                Id = e.Id,
                                 FirstName = e.FirstName,
                                 SecondName = e.SecondName,
                                 PhoneNumber = e.PhoneNumber,

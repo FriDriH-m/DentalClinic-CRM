@@ -29,17 +29,14 @@ namespace DoctorMomFrontend
             AddServiceButton.Click += OpenAddServicePage;
             OpenMaterialsPageButton.Click += OpenMaterialsPage;
         }
-
         private void OpenMaterialsPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminMaterialsPage());
         }
-
         private void OpenAddServicePage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new RegistrationServicePage());
         }
-
         private void ApplyFilters()
         {
             var selectedClinic = ClinicComboBox.SelectedItem as string;

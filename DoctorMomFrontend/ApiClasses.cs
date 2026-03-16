@@ -36,6 +36,7 @@ namespace DoctorMomFrontend.Utils
         public decimal PurchasePrice { get; set; }
         public int Count { get; set; }
         public int ClinicId { get; set; }
+        public string ClinicAddress { get; set; }
     }
     public record RegisterService(ServiceDTO service, int[] materialsId);
     public class RegistrationUserDTO
@@ -58,6 +59,7 @@ namespace DoctorMomFrontend.Utils
     }
     public class EmployeeTableDTO
     {
+        public int Id { get; set; }
         public string FullName => $"{SecondName} {FirstName}".Trim();
         public string FirstName { get; set; }
         public string SecondName { get; set; }
