@@ -159,6 +159,7 @@ namespace Web_API.Models
         public int Id { get; set; }
         public int ServiceId { get; set; }
         public int MaterialId { get; set; }
+        public int Count { get; set; }
 
         [ForeignKey("ServiceId")] public Service Service { get; set; }
         [ForeignKey("MaterialId")] public Material Material { get; set; }

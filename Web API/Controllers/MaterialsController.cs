@@ -87,6 +87,7 @@ namespace Web_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpGet("{clinicId}")]
         public IActionResult GetClinicsMaterials(int clinicId)
         {

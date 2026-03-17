@@ -14,12 +14,16 @@ namespace DoctorMomFrontend
     /// </summary>
     public partial class AdminServicesPage : Page
     {
-        private List<ServiceDTO> _services = new();
+        private List<ServiceDTO> _allServices = new();
+        private List<MaterialDTO> _allMaterials = new();
+        private List<ClinicTableDTO> _allClinics = new();
         private readonly string ApiUrl = "https://localhost:7141/api/";
         public AdminServicesPage()
         {
             InitializeComponent();
             Loaded += async (s, e) => await LoadAllServices();
+            Loaded += async (s, e) => await LoadClinicsAsync();
+            Loaded += async (s, e) => await LoadAllMaterials();
 
             EmployyesPageButton.Click += OpenEmployeesPage;
             ClinicsPageButton.Click += OpenClinicsPage;
@@ -35,14 +39,14 @@ namespace DoctorMomFrontend
         }
         private void OpenAddServicePage(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new RegistrationServicePage());
+            NavigationService.Navigate(new RegistrationServicePage(_allServices, _allMaterials, _allClinics));
         }
         private void ApplyFilters()
         {
             var selectedClinic = ClinicComboBox.SelectedItem as string;
             var selectedCategory = CategoryComboBox.SelectedItem as string;
 
-            var filteredServices = _services
+            var filteredServices = _allServices
                 .Where(s => string.IsNullOrEmpty(selectedClinic) || s.ClinicAddress == selectedClinic)
                 .Where(s => string.IsNullOrEmpty(selectedCategory) || s.CategoryName == selectedCategory)
                 .ToList();
@@ -78,22 +82,55 @@ namespace DoctorMomFrontend
                 }
             }
         }
-        // позже добавлю возможность редактировать услугу
-        private void RedactServiceButton_Click(object sender, RoutedEventArgs e)
+        private async void RedactServiceButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var selectedService = button.DataContext as ServiceDTO;
+
+            if (selectedService == null) return;
+
+            List<MaterialDTO> materials = new();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.AddHeaders();
+
+                var response = await client.GetAsync(ApiUrl + $"clinics/services/{selectedService.Id}/materials");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    materials = await response.Content.ReadFromJsonAsync<List<MaterialDTO>>();
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось получить связи услуги с материалами");
+                }
+            }
+
+            RedactorServiceWindow serviceWindow = new RedactorServiceWindow
+            (
+                service: selectedService,
+                allClinics: _allClinics,
+                allServices: _allServices,
+                clinicId: selectedService.ClinicId,
+                serviceMaterials: materials
+            );
+
+            serviceWindow.ShowDialog();
+
+            if (serviceWindow.DialogResult == true)
+            {
+                await LoadAllServices();
+            }
         }
         private void UpdateServiceListCategory(object sender, SelectionChangedEventArgs e)
         {
             ApplyFilters();
         }
-
         private void UpdateServiceListClinic(object sender, SelectionChangedEventArgs e)
         {
             ApplyFilters();
         }
-
         private void OpenServicesPage(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new AdminServicesPage());
@@ -106,6 +143,47 @@ namespace DoctorMomFrontend
         {
             NavigationService.Navigate(new AdminMainPage());
         }
+        private async Task LoadClinicsAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    var response = await client.GetAsync(ApiUrl + "clinics");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _allClinics = await response.Content.ReadFromJsonAsync<List<ClinicTableDTO>>();                        
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось агрузить клиники");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+        private async Task LoadAllMaterials()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.AddHeaders();
+
+                var response = await client.GetAsync(ApiUrl + "materials");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _allMaterials = await response.Content.ReadFromJsonAsync<List<MaterialDTO>>();
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось загрузиться услуги");
+                    return;
+                }
+            }
+        }
         private async Task LoadAllServices()
         {
             using (HttpClient client = new HttpClient())
@@ -116,20 +194,20 @@ namespace DoctorMomFrontend
 
                 if (response.IsSuccessStatusCode)
                 {
-                    _services = await response.Content.ReadFromJsonAsync<List<ServiceDTO>>();
+                    _allServices = await response.Content.ReadFromJsonAsync<List<ServiceDTO>>();
 
-                    ClinicComboBox.ItemsSource = _services
+                    ClinicComboBox.ItemsSource = _allServices
                         .Select(s => s.ClinicAddress)
                         .Distinct()
                         .ToList();
 
-                    CategoryComboBox.ItemsSource = _services
+                    CategoryComboBox.ItemsSource = _allServices
                         .Select(s => s.CategoryName)
                         .Distinct()
                         .ToList();
 
 
-                    ServicesListBox.ItemsSource = _services;
+                    ServicesListBox.ItemsSource = _allServices;
                 }
                 else
                 {
@@ -138,5 +216,6 @@ namespace DoctorMomFrontend
                 }
             }
         }
+
     }
 }

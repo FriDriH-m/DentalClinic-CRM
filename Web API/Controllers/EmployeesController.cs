@@ -1,11 +1,6 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
-using System.Threading.Tasks;
-using Web_API.Models;
 using Web_API.Utils;
 
 namespace Web_API.Controllers

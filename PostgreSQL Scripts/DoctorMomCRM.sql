@@ -7,6 +7,7 @@ WHERE "Id" = 13;
 SELECT * FROM "Clinics";
 SELECT * FROM "Materials";
 SELECT * FROM "Services";
+SELECT * FROM "ServiceMaterials";
 SELECT * FROM "Employees";
 SELECT * FROM "ClinicEmployees";
 SELECT * FROM "DoctorCategorySkills";

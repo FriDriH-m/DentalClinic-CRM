@@ -127,6 +127,59 @@ namespace Web_API.Controllers
                 return BadRequest("Не удалось получить услуги клиник");
             }
         }
+        [HttpPut("services/{id}")]
+        public async Task<IActionResult> UpdateService(int id, [FromBody] RegisterService service)
+        {
+            try
+            {
+                // 1. Находим существующую услугу
+                var existingService = await _context.Services.FindAsync(id);
+                if (existingService == null)
+                {
+                    return NotFound("Услуга не найдена");
+                }
+
+                // 2. Обновляем поля
+                existingService.Name = service.service.Name;
+                existingService.Description = service.service.Description;
+                existingService.DurationMinutes = service.service.DurationMinutes;
+                existingService.BasePrice = service.service.BasePrice;
+                existingService.CategoryName = service.service.CategoryName;
+                existingService.CategoryId = service.service.CategoryId;
+                existingService.ClinicId = service.service.ClinicId;
+
+                var oldLinks = await _context.ServiceMaterials
+                    .Where(sm => sm.ServiceId == id)
+                    .ToListAsync();
+                _context.ServiceMaterials.RemoveRange(oldLinks);
+
+                // 4. Добавляем новые связи
+                if (service.materialsId != null && service.materialsId.Length > 0)
+                {
+                    foreach (var materialId in service.materialsId)
+                    {
+                        var materialExists = await _context.Materials.AnyAsync(m => m.Id == materialId);
+                        if (!materialExists)
+                        {
+                            return BadRequest($"Материал с Id {materialId} не найден");
+                        }
+
+                        await _context.ServiceMaterials.AddAsync(new ServiceMaterials
+                        {
+                            ServiceId = id,
+                            MaterialId = materialId
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            }
+        }
         [HttpPost("services")]
         public async Task<IActionResult> AddNewService([FromBody] RegisterService service)
         {
@@ -163,6 +216,33 @@ namespace Web_API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            }
+        }
+        [HttpGet("services/{id}/materials")]
+        public async Task<IActionResult> GetServiceMaterials(int id)
+        {
+            try
+            {
+                var serviceMaterials = await _context.ServiceMaterials
+                    .Include(sm => sm.Material)
+                    .Where(sm => sm.ServiceId == id)
+                    .Select(m => new MaterialDTO
+                    {
+                        Name = m.Material.Name,
+                        Description = m.Material.Description,
+                        IsCertifiedMaterial = m.Material.IsCertifiedMaterial,
+                        PurchasePrice = m.Material.PurchasePrice,
+                        Price = m.Material.Price,
+                        Count = m.Material.Count,
+                        ClinicId = m.Material.ClinicId
+                    })
+                    .ToListAsync();
+
+                return Ok(serviceMaterials);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
         [HttpDelete("services/{serviceId}")]

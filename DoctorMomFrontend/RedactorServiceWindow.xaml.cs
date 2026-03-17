@@ -5,55 +5,52 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xaml;
-
 
 namespace DoctorMomFrontend
 {
     /// <summary>
-    /// Логика взаимодействия для RegistrationServicePage.xaml
+    /// Логика взаимодействия для RedactorServiceWindow.xaml
     /// </summary>
-    public partial class RegistrationServicePage : Page
+    public partial class RedactorServiceWindow : Window
     {
-        private ObservableCollection<MaterialDTO> _selectedMaterials;
-        private readonly string ApiUrl = "https://localhost:7141/api/";
-        private List<ServiceDTO> _allServices = new(); 
+        private ObservableCollection<MaterialDTO> _selectedMaterials = new();
+        private List<ServiceDTO> _allServices = new();
         private List<MaterialDTO> _allMaterials = new();
         private List<ClinicTableDTO> _allClinics = new();
-        public RegistrationServicePage(
-            List<ServiceDTO> allServices,
-            List<MaterialDTO> allMaterials,
-            List<ClinicTableDTO> allClinics)
+        private ServiceDTO _service;
+        private int _clinicId;
+        private readonly string ApiUrl = "https://localhost:7141/api/";
+        public RedactorServiceWindow(
+            ServiceDTO service,
+            List<ServiceDTO> allServices, List<ClinicTableDTO> allClinics,
+            List<MaterialDTO> serviceMaterials, int clinicId)
         {
             InitializeComponent();
-
-            _allServices = allServices;
-            _allMaterials = allMaterials;
+            foreach(var material  in serviceMaterials)
+            {
+                _selectedMaterials.Add(material);
+            }
+            _clinicId = clinicId;
             _allClinics = allClinics;
+            _allServices = allServices;
+            _service = service;
 
-            ClinicComboBox.ItemsSource = _allClinics;
-            CategoryComboBox.ItemsSource = _allServices;
+            Loaded += async (s, e) => await Init();
 
-            _selectedMaterials = new();
-            MaterialsListBox.ItemsSource = _selectedMaterials;
-
-            BackButton.Click += OpenAdminServicesPage;
             AddMaterialButton.Click += AddMaterial;
-            RegisterServiceButton.Click += RegisterService;
-            MaterialSearchBox.TextChanged += SearchMaterial;
-            ClinicComboBox.SelectionChanged += UpdateSelectedClinic;
+            CancelButton.Click += (s, e) =>
+            {
+                DialogResult = false;
+                Close();
+            };
+            SaveButton.Click += async (s, e) => await SaveService();
         }
-        public async void RemoveMaterialButton_Click(object sender, RoutedEventArgs e)
+
+        private async Task SaveService()
         {
-            Button btn = sender as Button;
-            MaterialDTO material = btn.DataContext as MaterialDTO;
-            _selectedMaterials.Remove(material);
-        }
-        private async void RegisterService(object sender, RoutedEventArgs e)
-        {
-            if (ServiceNameBox.Text == null || 
-                DescriptionBox.Text == null || 
-                DurationBox.Text == null || 
+            if (NameBox.Text == null ||
+                DescriptionBox.Text == null ||
+                DurationBox.Text == null ||
                 PriceBox == null || CategoryComboBox.SelectedValue == null ||
                 ClinicComboBox.SelectedValue == null)
             {
@@ -71,7 +68,8 @@ namespace DoctorMomFrontend
 
             ServiceDTO newService = new ServiceDTO
             {
-                Name = ServiceNameBox.Text,
+                Id = _service.Id,
+                Name = NameBox.Text,
                 Description = DescriptionBox.Text,
                 DurationMinutes = Convert.ToInt32(DurationBox.Text),
                 CategoryId = (int)CategoryComboBox.SelectedValue,
@@ -88,7 +86,7 @@ namespace DoctorMomFrontend
                 client.AddHeaders();
                 try
                 {
-                    var response = await client.PostAsJsonAsync(ApiUrl + "clinics/services", registerService);
+                    var response = await client.PutAsJsonAsync(ApiUrl + "clinics/services/" + _service.Id, registerService);
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Услугу зарегистрирована");
@@ -104,26 +102,15 @@ namespace DoctorMomFrontend
                 }
             }
         }
-        private void OpenAdminServicesPage(object sender, RoutedEventArgs e)
+
+
+        private async Task Init()
         {
-            NavigationService.Navigate(new AdminServicesPage());
-        }
-
-        private async void UpdateSelectedClinic(object sender, SelectionChangedEventArgs e)
-        {
-            MaterialsBorder.IsEnabled = ClinicComboBox.SelectedItem != null;
-            MaterialsBorder.Opacity = MaterialsBorder.IsEnabled ? 1.0 : 0.5;
-
-            _selectedMaterials.Clear();
-            _allMaterials.Clear();
-
-            var clinicId = (int)ClinicComboBox.SelectedValue;
-
             using (HttpClient client = new HttpClient())
             {
                 client.AddHeaders();
 
-                var response = await client.GetAsync(ApiUrl + $"materials/{clinicId}");
+                var response = await client.GetAsync(ApiUrl + $"materials/{_clinicId}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -134,22 +121,29 @@ namespace DoctorMomFrontend
                     MessageBox.Show("Ошибка получения материалов с базы данных");
                 }
             }
-        }
+            MaterialsListBox.ItemsSource = _selectedMaterials;
+            CategoryComboBox.ItemsSource = _allServices;
+            ClinicComboBox.ItemsSource = _allClinics;
 
-        private async void SearchMaterial(object sender, TextChangedEventArgs e)
+            InitData();
+        }
+        public void RemoveMaterial_Click(object sender, RoutedEventArgs e)
         {
-            var searchText = MaterialSearchBox.Text.ToLower();
-
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                return;
-            }
-
-            var filtered = _allMaterials
-                .Where(m => m.Name.ToLower().Contains(searchText))
-                .Take(10)
-                .ToList();
+            Button btn = sender as Button;
+            MaterialDTO material = btn.DataContext as MaterialDTO;
+            _selectedMaterials.Remove(material);
         }
+
+        private void InitData()
+        {
+            NameBox.Text = _service.Name;
+            DescriptionBox.Text = _service.Description;
+            DurationBox.Text = Convert.ToString(_service.DurationMinutes);
+            PriceBox.Text = Convert.ToString(_service.BasePrice);
+            ClinicComboBox.SelectedItem = _allClinics.FirstOrDefault(c => c.Id == _service.ClinicId);
+            CategoryComboBox.SelectedItem = _allServices.FirstOrDefault(s => s.Id == _service.Id);
+        }
+
         private async void AddMaterial(object sender, RoutedEventArgs e)
         {
             var searchText = MaterialSearchBox.Text.Trim();

@@ -61,7 +61,7 @@
                         <StackPanel Margin="0,0,7.5,15">
                             <TextBlock Text="Категория" Foreground="#0277BD" FontWeight="SemiBold" Margin="0,0,0,5"/>
                             <ComboBox x:Name="CategoryComboBox" Padding="10,8" BorderBrush="#B3E5FC" 
-                                      Background="#FAFAFA" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+                                      Background="#FAFAFA" DisplayMemberPath="CategoryName" SelectedValuePath="CategoryId"/>
                         </StackPanel>
 
                         <!-- Клиника -->
@@ -117,7 +117,8 @@
                                                        VerticalAlignment="Center" Foreground="#333"/>
                                             <TextBlock Grid.Column="1" Text="{Binding Count}" 
                                                        VerticalAlignment="Center" Foreground="#333"/>
-                                            <Button Grid.Column="2" Content="✕" Padding="8,4" 
+                                            <Button Click="RemoveMaterialButton_Click"
+                                                    Grid.Column="2" Content="✕" Padding="8,4" 
                                                     Background="#EF5350" Foreground="White"
                                                     Tag="{Binding}"/>
                                         </Grid>
