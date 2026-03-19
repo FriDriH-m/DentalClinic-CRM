@@ -3,12 +3,12 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:DoctorMomFrontend"
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1000"
       Title="Новая запись - DoctorMom">
 
     <Page.Resources>
-        <!-- Стиль кнопок меню -->
         <Style x:Key="MenuButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -25,7 +25,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Стиль для DatePicker -->
         <Style x:Key="FormDatePickerStyle" TargetType="DatePicker">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
@@ -36,7 +35,6 @@
             <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
 
-        <!-- Стиль для лейблов формы -->
         <Style x:Key="FormLabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -45,7 +43,6 @@
             <Setter Property="Margin" Value="0,0,0,8"/>
         </Style>
 
-        <!-- Стиль для ComboBox -->
         <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
@@ -56,7 +53,6 @@
             <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
 
-        <!-- Стиль для TextBox -->
         <Style x:Key="FormTextBoxStyle" TargetType="TextBox">
             <Setter Property="Height" Value="35"/>
             <Setter Property="FontSize" Value="14"/>
@@ -67,7 +63,6 @@
             <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
 
-        <!-- Стиль для основных кнопок -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#0288D1"/>
             <Setter Property="Foreground" Value="White"/>
@@ -88,7 +83,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Стиль для вторичных кнопок -->
         <Style x:Key="SecondaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="#0288D1"/>
@@ -106,33 +100,16 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Стиль для карточек шагов -->
         <Style x:Key="StepCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="10"/>
             <Setter Property="Padding" Value="15"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
             <Setter Property="BorderBrush" Value="#E0E0E0"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <!-- Стиль для ListBox времени -->
-        <Style x:Key="TimeSlotStyle" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="Margin" Value="2"/>
-            <Setter Property="Background" Value="#F5F5F5"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#0288D1"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#B3E5FC"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Background="#F0F8FF">
@@ -157,7 +134,7 @@
         </Border>
 
         <!-- Основная область контента -->
-        <Grid Grid.Column="1" Margin="30">
+        <Grid Grid.Column="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -176,7 +153,6 @@
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
                           HorizontalScrollBarVisibility="Disabled" Margin="0,0,10,0">
                 <StackPanel>
-
                     <!-- ШАГ 1: Выбор услуги -->
                     <Border Style="{StaticResource StepCardStyle}">
                         <StackPanel>
@@ -185,17 +161,9 @@
 
                             <TextBlock Text="Выберите услугу из списка" Style="{StaticResource FormLabelStyle}"/>
                             <ComboBox x:Name="ServiceComboBox" Style="{StaticResource FormComboBoxStyle}"
-                                      DisplayMemberPath="Name"
-                                      SelectedValuePath="Id"
-                                      ItemsSource="{Binding Services}">
-                                <ComboBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel/>
-                                    </ItemsPanelTemplate>
-                                </ComboBox.ItemsPanel>
-                            </ComboBox>
+                                      DisplayMemberPath="Name" SelectedValuePath="Id"
+                                      ItemsSource="{Binding Services}"/>
 
-                            <!-- Информация об услуге -->
                             <Border Background="#E1F5FE" CornerRadius="8" Padding="10" Margin="0,10,0,0">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -227,78 +195,163 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ШАГ 2: Дата и время -->
+                    <!-- ШАГ 2: Дата, время и выбор врача -->
                     <Border Style="{StaticResource StepCardStyle}">
                         <StackPanel>
-                            <TextBlock Text="2. Дата и время приема" FontSize="18" FontWeight="Bold" 
+                            <TextBlock Text="2. Дата, время и врач" FontSize="18" FontWeight="Bold" 
                                        Foreground="#0277BD" Margin="0,0,0,15"/>
 
-                            <Grid>
+                            <!-- Дата и время -->
+                            <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                     <TextBlock Text="📅 Дата приема" Style="{StaticResource FormLabelStyle}"/>
-                                    <DatePicker x:Name="DatePick" Style="{StaticResource FormDatePickerStyle}"
-                                                Margin="0,0,0,0"/>
+                                    <DatePicker x:Name="DatePick" Style="{StaticResource FormDatePickerStyle}"/>
                                 </StackPanel>
 
-                                <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="🕐 Время" Style="{StaticResource FormLabelStyle}"/>
-                                    <ListBox x:Name="TimeSlotsListBox" 
-                                             Width="120" Height="150"
-                                             BorderBrush="#B3E5FC" BorderThickness="1">
-                                        <ListBox.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel/>
-                                            </ItemsPanelTemplate>
-                                        </ListBox.ItemsPanel>
-                                        <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem">
-                                                <Setter Property="Padding" Value="10,5"/>
-                                                <Setter Property="Margin" Value="2"/>
-                                                <Setter Property="Background" Value="#F5F5F5"/>
-                                                <Setter Property="Cursor" Value="Hand"/>
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsSelected" Value="True">
-                                                        <Setter Property="Background" Value="#0288D1"/>
-                                                        <Setter Property="Foreground" Value="White"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#B3E5FC"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ListBox.ItemContainerStyle>
-                                    </ListBox>
+                                <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                    <TextBlock Text="Часы" Style="{StaticResource FormLabelStyle}"/>
+                                    <ComboBox x:Name="HourComboBox" Style="{StaticResource FormComboBoxStyle}"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Минуты" Style="{StaticResource FormLabelStyle}"/>
+                                    <ComboBox x:Name="MinuteComboBox" Style="{StaticResource FormComboBoxStyle}"/>
                                 </StackPanel>
                             </Grid>
 
-                            <TextBlock x:Name="SelectedDateTimeText" 
-                                       Text="Дата и время не выбраны" 
-                                       Foreground="#0277BD" FontWeight="SemiBold"
-                                       Margin="0,10,0,0"/>
-
+                            <!-- Кнопка поиска врачей -->
                             <Button x:Name="FindDoctorsButton" Content="🔍 Найти свободных врачей" 
                                     Style="{StaticResource PrimaryButtonStyle}"
-                                    HorizontalAlignment="Left"/>
+                                    HorizontalAlignment="Left" Margin="0,0,0,15"/>
+
+                            <!-- Список свободных врачей -->
+                            <ListBox x:Name="DoctorsListBox" 
+                                     Height="150"
+                                     BorderBrush="#B3E5FC" 
+                                     BorderThickness="1" 
+                                     Margin="0,0,0,10"
+                                     SelectionMode="Single"
+                                     Visibility="Visible">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Padding" Value="10,8"/>
+                                        <Setter Property="Margin" Value="0,2"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="#0288D1"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#B3E5FC"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding FullName}" 
+                                                           FontWeight="SemiBold" 
+                                                           Foreground="#01579B" 
+                                                           FontSize="14"
+                                                           Margin="0,0,15,0"/>
+
+                                                <Border Background="#E3F2FD" 
+                                                        CornerRadius="4" 
+                                                        Padding="8,3"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Specialization}" 
+                                                               Foreground="#0277BD" 
+                                                               FontSize="12"
+                                                               FontWeight="Medium"/>
+                                                </Border>
+
+                                                <Border Background="#4CAF50" 
+                                                        CornerRadius="4" 
+                                                        Padding="6,3"
+                                                        Margin="10,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Visibility="{Binding IsCertified, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    
+                                                    <TextBlock Text="✓ Серт." 
+                                                               Foreground="White" 
+                                                               FontSize="10"
+                                                               FontWeight="Medium"/>
+                                                </Border>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="🕐" FontSize="14" Margin="0,0,4,0"/>
+                                                <TextBlock Text="{Binding Experience, StringFormat='{}{0} лет'}" 
+                                                           Foreground="#666" 
+                                                           FontSize="12"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <!-- Сообщение если нет врачей -->
+                            <TextBlock x:Name="NoDoctorsText" 
+                                       Text="❌ Нет свободных врачей на это время" 
+                                       Foreground="#E53935" 
+                                       FontWeight="SemiBold" 
+                                       Visibility="Collapsed" 
+                                       Margin="0,5,0,0"
+                                       TextAlignment="Center"/>
+
+                            <!-- Выбранный врач -->
+                            <Border x:Name="SelectedDoctorPanel" 
+                                    Background="#E8F5E9" 
+                                    CornerRadius="8" 
+                                    Padding="12"
+                                    BorderBrush="#81C784" 
+                                    BorderThickness="1"
+                                    Visibility="Collapsed"
+                                    Margin="0,10,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="✅ Выбран: " FontWeight="SemiBold" Foreground="#2E7D32"/>
+                                    <TextBlock x:Name="SelectedDoctorText" 
+                                               Foreground="#2E7D32" 
+                                               FontWeight="Bold"
+                                               FontSize="14"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button x:Name="SelectDoctorButton" 
+                                    Content="✓ Подтвердить выбор врача" 
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,10,0,0"
+                                    Visibility="Collapsed"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- ШАГ 3: Поиск и выбор пациента -->
+                    <!-- ШАГ 3: Пациент -->
                     <Border Style="{StaticResource StepCardStyle}">
                         <StackPanel>
                             <TextBlock Text="3. Пациент" FontSize="18" FontWeight="Bold" 
                                        Foreground="#0277BD" Margin="0,0,0,15"/>
 
-                            <!-- Поиск пациента -->
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1.5*"/>
-                                    <ColumnDefinition Width="0.8*"/>
-                                    <ColumnDefinition Width="0.8*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox x:Name="PatientSearchTextBox" 
@@ -308,16 +361,12 @@
                                 <Button x:Name="AddPatientButton" Grid.Column="1" 
                                         Content="+ Новый пациент" 
                                         Style="{StaticResource SecondaryButtonStyle}"
-                                        Padding="0" Height="35"/>
+                                        Margin="0,0,10,0"/>
                                 <Button x:Name="SpendBonusesButton" Grid.Column="2" 
                                         Content="Потратить бонусы" 
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        Padding="0" Height="35">
-                                    
-                                </Button>
+                                        Style="{StaticResource SecondaryButtonStyle}"/>
                             </Grid>
 
-                            <!-- DataGrid со списком пациентов -->
                             <DataGrid x:Name="PatientsDataGrid" 
                                       AutoGenerateColumns="False"
                                       CanUserAddRows="False"
@@ -340,7 +389,6 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <!-- Информация о выбранном пациенте -->
                             <Border x:Name="ClientInfoPanel" Background="#E8F5E9" 
                                     CornerRadius="8" Padding="10" Margin="0,15,0,0" Visibility="Collapsed"
                                     BorderBrush="#81C784" BorderThickness="1">
@@ -368,55 +416,13 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ШАГ 4: Выбор врача -->
-                    <Border x:Name="DoctorsSection" Style="{StaticResource StepCardStyle}" Visibility="Collapsed">
-                        <StackPanel>
-                            <TextBlock Text="4. Выберите врача" FontSize="18" FontWeight="Bold" 
-                                       Foreground="#0277BD" Margin="0,0,0,15"/>
-
-                            <ListBox x:Name="DoctorsListBox" Height="120"
-                                     BorderBrush="#B3E5FC" BorderThickness="1" Margin="0,0,0,10">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                                <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" 
-                                                           Foreground="#01579B" Margin="0,0,10,0"/>
-                                                <TextBlock Text="{Binding Specialization}" Foreground="#666" FontStyle="Italic"/>
-                                            </StackPanel>
-
-                                            <TextBlock Grid.Column="1" Text="✓ Доступен" 
-                                                       Foreground="#43A047" FontWeight="SemiBold"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-
-                            <TextBlock x:Name="NoDoctorsText" Text="❌ Нет свободных врачей на это время" 
-                                       Foreground="#E53935" FontWeight="SemiBold" 
-                                       Visibility="Collapsed" Margin="0,5,0,0"/>
-
-                            <TextBlock x:Name="SelectedDoctorText" 
-                                       Text="" 
-                                       Foreground="#0277BD" FontWeight="SemiBold"
-                                       Margin="0,10,0,0"/>
-                        </StackPanel>
-                    </Border>
-
                     <!-- Предварительный просмотр -->
                     <Border Background="#E8F5E9" CornerRadius="10" Padding="15" BorderBrush="#81C784" BorderThickness="1">
                         <StackPanel>
                             <TextBlock Text="📋 Предварительный просмотр" FontSize="16" FontWeight="Bold" 
                                        Foreground="#2E7D32" Margin="0,0,0,10"/>
-                            <StackPanel x:Name="PreviewPanel">
-                                <TextBlock x:Name="PreviewText" Text="Заполните все поля для просмотра" 
-                                           Foreground="#555" LineHeight="22"/>
-                            </StackPanel>
+                            <TextBlock x:Name="PreviewText" Text="Заполните все поля для просмотра" 
+                                       Foreground="#555" LineHeight="22"/>
                         </StackPanel>
                     </Border>
 

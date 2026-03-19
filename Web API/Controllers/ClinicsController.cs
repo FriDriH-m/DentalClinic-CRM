@@ -271,8 +271,10 @@ namespace Web_API.Controllers
                     .Where(s => s.ClinicId == clinicId)
                     .Select(s => new ServiceDTO
                     {
+                        Id = s.Id,
                         Name = s.Name,
                         Description = s.Description,
+                        DurationMinutes = s.DurationMinutes,
                         BasePrice = s.BasePrice,
                         CategoryName = s.CategoryName,
                     })

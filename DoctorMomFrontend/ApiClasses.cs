@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace DoctorMomFrontend.Utils
 {
+    public enum AppointmentStatus { Pending = 0, Completed = 1, Cancelled = 2 }
     public static class EmployeeSession
     {
         public static int EmployeeId { get; set; }
@@ -25,6 +26,18 @@ namespace DoctorMomFrontend.Utils
         public string PostalCode { get; set; }
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
+    }
+    public class AppointmentDTO
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public AppointmentStatus Status { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
+        public bool IsClosed { get; set; }
+        public int ClientId { get; set; }
+        public int ClinicId { get; set; }
+        public int EmployeeId { get; set; }
     }
     public class MaterialDTO 
     {

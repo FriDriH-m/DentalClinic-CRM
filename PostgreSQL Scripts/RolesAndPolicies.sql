@@ -51,6 +51,7 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO role_admin;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO role_admin;
 
 GRANT SELECT, INSERT, UPDATE ON TABLE "Clients", "Appointments", "Checks" TO role_manager;
+GRANT DELETE, UPDATE ON TABLE "Bonuses" TO role_manager;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO role_manager;
 -------------
 ALTER TABLE "Clients" ENABLE ROW LEVEL SECURITY;
@@ -58,12 +59,58 @@ ALTER TABLE "Appointments" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Checks" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Bonuses" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Materials" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Employees" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY api_employee_access ON "Employees"
+    FOR ALL
+    TO api_user
+    USING (true) 
+    WITH CHECK (true);
+
+CREATE POLICY analyst_employee_access ON "Employees"
+    FOR ALL
+    TO role_analyst
+    USING (true) 
+    WITH CHECK (true);
+
 
 CREATE POLICY manager_clients_access ON "Clients"
     FOR ALL
     TO role_manager
     USING (true) 
     WITH CHECK (true);
+
+CREATE POLICY manager_clients_access ON "Clients"
+    FOR ALL
+    TO role_manager
+    USING (true) 
+    WITH CHECK (true);
+	
+CREATE POLICY manager_employees_access ON "Employees"
+    FOR ALL 
+    TO role_manager
+    USING (
+        "Id" IN (
+            SELECT ce."EmployeeId"
+            FROM "ClinicEmployees" ce
+            WHERE ce."ClinicId" IN (
+                SELECT ce2."ClinicId"
+                FROM "ClinicEmployees" ce2
+                WHERE ce2."EmployeeId" = current_setting('app.current_employee_id')::int
+            )
+        )
+    )
+    WITH CHECK (
+        "Id" IN (
+            SELECT ce."EmployeeId"
+            FROM "ClinicEmployees" ce
+            WHERE ce."ClinicId" IN (
+                SELECT ce2."ClinicId"
+                FROM "ClinicEmployees" ce2
+                WHERE ce2."EmployeeId" = current_setting('app.current_employee_id')::int
+            )
+        )
+    );
 
 CREATE POLICY manager_appointments_isolation ON "Appointments"
     FOR ALL
@@ -82,6 +129,12 @@ CREATE POLICY manager_appointments_isolation ON "Appointments"
             WHERE ce."EmployeeId" = current_setting('app.current_employee_id')::int
         )
     );
+CREATE POLICY manager_employees_access ON "Employees"
+	FOR ALL 
+	TO role_manager
+	USING(
+		""
+	)
 
 CREATE POLICY manager_checks_access ON "Checks"
     FOR ALL

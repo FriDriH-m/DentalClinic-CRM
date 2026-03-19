@@ -33,6 +33,7 @@ namespace Web_API.Controllers
                     SecondName = e.SecondName,
                     PhoneNumber = e.PhoneNumber,
                     Specialization = e.Specialization,
+                    IsCertified = e.IsCertified ?? false,
                     Info = e.Info,
                     Age = e.Age,
                     Salary = e.Salary,

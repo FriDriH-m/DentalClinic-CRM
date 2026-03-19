@@ -56,6 +56,18 @@ namespace Web_API.Utils
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
     }
+    public class AppointmentDTO
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public AppointmentStatus Status { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
+        public bool IsClosed { get; set; }
+        public int ClientId { get; set; }
+        public int ClinicId { get; set; }
+        public int EmployeeId { get; set; }
+    }
     public class EmployeeTableDTO
     {
         public int Id { get; set; }

@@ -1,9 +1,7 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System.Threading.Tasks;
 using Web_API.Models;
 using Web_API.Utils;
 

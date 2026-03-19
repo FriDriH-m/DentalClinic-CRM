@@ -112,6 +112,7 @@ namespace Web_API.Models
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public DateTime EndTime { get; set; }
         public AppointmentStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
