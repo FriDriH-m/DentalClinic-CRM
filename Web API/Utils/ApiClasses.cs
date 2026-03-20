@@ -24,7 +24,18 @@ namespace Web_API.Utils
         public string ClinicAddress { get; set; }
         public int ClinicId { get; set; }
     }
-    
+    public class ClientDTO
+    {
+        public string FullName => $"{SecondName} {FirstName}".Trim();
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string SecondName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
+        public string Info { get; set; }
+        public ClientStatus Status { get; set; }
+        public int MoneySpent { get; set; }
+    }
     public class ServiceDTO
     {
         public int Id { get; set; }
@@ -37,17 +48,6 @@ namespace Web_API.Utils
         public int ClinicId { get; set; }
         public string ClinicAddress {  get; set; }
     }
-    public class Appointment
-    {
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public AppointmentStatus Status { get; set; }
-        public decimal TotalPrice { get; set; }
-        public decimal Discount { get; set; }
-        public int ClientId { get; set; }
-        public int ClinicId { get; set; }
-        public int EmployeeId { get; set; }
-    }
     public class ClinicTableDTO
     {
         public int Id { get; set; }
@@ -56,10 +56,19 @@ namespace Web_API.Utils
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
     }
+    public class BonuseDTO
+    {
+        public int Id { get; set; }
+        public DateTime AddedAt { get; set; }
+        public DateTime ExpiredAt { get; set; }
+        public int Amount { get; set; }
+        public int ClientId { get; set; }
+    }
     public class AppointmentDTO
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public DateTime EndTime { get; set; }
         public AppointmentStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
@@ -67,6 +76,7 @@ namespace Web_API.Utils
         public int ClientId { get; set; }
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
+        public int ServiceId { get; set; }
     }
     public class EmployeeTableDTO
     {

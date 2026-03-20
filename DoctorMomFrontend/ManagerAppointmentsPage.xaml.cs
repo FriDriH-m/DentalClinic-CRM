@@ -16,18 +16,107 @@ namespace DoctorMomFrontend
     {
         private readonly string ApiUrl = "https://localhost:7141/api/";
         private List<ServiceDTO> _allAvailableServices = new();
+        private List<ClientDTO> _allClients = new();
         public ObservableCollection<ServiceDTO> Services { get; set; } = new();
+        private EmployeeTableDTO _selectedDoctor;
         public ManagerAppointmentsPage()
         {
             InitializeComponent();
             InitializeTimeComboBoxes();
             DataContext = this;
             Loaded += async (s, e) => await LoadServices();
+            Loaded += async (s, e) => await LoadClients();
 
             ServiceComboBox.SelectionChanged += UpdateServiceInfo;
-            ServiceComboBox.SelectionChanged += UpdateTimeIntervals;
+            DoctorsListBox.SelectionChanged += UpdateDoctorSelect;
+            PatientsDataGrid.SelectionChanged += UpdateClientInfo;
+            PatientSearchTextBox.TextChanged += UpdateClientsList;
+            SelectDoctorButton.Click += SaveDoctorChoose;
+            SaveButton.Click += CreateAppointment;
+            AddPatientButton.Click += (s, e) => NavigationService.Navigate(new RegistrationClientPage());
             FindDoctorsButton.Click += async (s, e) => await FindFreeDoctors();
-            //Loaded += async (s,e) => GetDoctorsAsync();
+        }
+
+        private void CreateAppointment(object sender, RoutedEventArgs e)
+        {
+            var service = ServiceComboBox.SelectedValue as ServiceDTO;
+            DateTime date = (DateTime)DatePick.SelectedDate;
+            DateTime endTime = date.AddMinutes(service.DurationMinutes);
+            decimal totalPrice = service.BasePrice;
+
+            if (UseBonusesCheckBox.IsChecked ?? false)
+            {
+
+            }
+            using (HttpClient client = new HttpClient())
+            {
+                AppointmentDTO newAppointment = new AppointmentDTO
+                {
+                    Date = date,
+                    EndTime = endTime,
+                    
+                };
+            }
+        }
+
+        private void UpdateClientsList(object sender, TextChangedEventArgs e)
+        {
+            PatientsDataGrid.ItemsSource = _allClients.Where(c => c.FullName.Contains(PatientSearchTextBox.Text));
+        }
+
+        private void UpdateClientInfo(object sender, SelectionChangedEventArgs e)
+        {
+            ClientInfoPanel.Visibility = Visibility.Visible;
+            var client = PatientsDataGrid.SelectedValue as ClientDTO;
+
+            ClientNameText.Text = client.FullName;
+            ClientPhoneText.Text = client.PhoneNumber;
+            ClientEmailText.Text = client.Email;
+            ClientNotesText.Text = client.Info;
+        }
+
+        private async Task LoadClients()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.AddHeaders();
+
+                try
+                {
+                    var response = await client.GetAsync(ApiUrl + "clients");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _allClients = await response.Content.ReadFromJsonAsync<List<ClientDTO>>();
+                        PatientsDataGrid.ItemsSource = _allClients;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось получить ответ от сервера");
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Не удалось получить клиентов");
+                }
+            }
+        }
+
+        private void SaveDoctorChoose(object sender, RoutedEventArgs e)
+        {
+            DoctorsListBox.Visibility = Visibility.Collapsed;
+            SelectedDoctorPanel.Visibility = Visibility.Visible;
+            SelectDoctorButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void UpdateDoctorSelect(object sender, SelectionChangedEventArgs e)
+        {
+            if (DoctorsListBox.SelectedValue == null) return;
+
+            SelectDoctorButton.Visibility = Visibility.Visible;
+
+            var doctor = DoctorsListBox.SelectedValue as EmployeeTableDTO;
+            _selectedDoctor = doctor;
+            SelectedDoctorText.Text = doctor.FullName + " " + doctor.Specialization;
         }
 
         private void InitializeTimeComboBoxes()
@@ -53,6 +142,9 @@ namespace DoctorMomFrontend
                 MessageBox.Show("Заполните все поля");
                 return;
             }
+
+            DoctorsListBox.Visibility = Visibility.Visible;
+            SelectDoctorButton.Visibility = Visibility.Visible;
 
             DateTime date = (DateTime)DatePick.SelectedDate;
 
@@ -92,11 +184,6 @@ namespace DoctorMomFrontend
                     MessageBox.Show("Не удалось  полоучить докторов");
                 }
             }
-        }
-
-        private void UpdateTimeIntervals(object sender, SelectionChangedEventArgs e)
-        {
-            
         }
 
         private void UpdateServiceInfo(object sender, SelectionChangedEventArgs e)

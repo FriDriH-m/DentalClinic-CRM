@@ -84,7 +84,8 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Content="+ Новый пациент" Margin="15,0,0,0" Padding="20,10" Background="#43A047" Foreground="White" FontWeight="Bold" Cursor="Hand">
+                <Button x:Name="NewClientButton"
+                        Content="+ Новый пациент" Margin="15,0,0,0" Padding="20,10" Background="#43A047" Foreground="White" FontWeight="Bold" Cursor="Hand">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>

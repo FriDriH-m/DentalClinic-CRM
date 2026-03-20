@@ -15,6 +15,7 @@ namespace Web_API
         public DbSet<Models.Appointment> Appointments { get; set; }
         public DbSet<Models.Service> Services { get; set; }
         public DbSet<Models.AppointmentMaterial> AppointmentMaterial { get; set; }
+        public DbSet<Models.AppointmentService> AppointmentService { get; set; }
         public DbSet<Models.Check> Checks { get; set; }
         public DbSet<Models.Bonuse> Bonuses { get; set; }
         public DbSet<Models.DoctorCategorySkill> DoctorCategorySkills { get; set; }

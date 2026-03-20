@@ -154,7 +154,7 @@
                           HorizontalScrollBarVisibility="Disabled" Margin="0,0,10,0">
                 <StackPanel>
                     <!-- ШАГ 1: Выбор услуги -->
-                    <Border Style="{StaticResource StepCardStyle}">
+                    <Border Style="{StaticResource StepCardStyle}" Visibility="Collapsed">
                         <StackPanel>
                             <TextBlock Text="1. Тип услуги" FontSize="18" FontWeight="Bold" 
                                        Foreground="#0277BD" Margin="0,0,0,15"/>
@@ -196,7 +196,7 @@
                     </Border>
 
                     <!-- ШАГ 2: Дата, время и выбор врача -->
-                    <Border Style="{StaticResource StepCardStyle}">
+                    <Border Style="{StaticResource StepCardStyle}" Visibility="Visible">
                         <StackPanel>
                             <TextBlock Text="2. Дата, время и врач" FontSize="18" FontWeight="Bold" 
                                        Foreground="#0277BD" Margin="0,0,0,15"/>
@@ -237,7 +237,7 @@
                                      BorderThickness="1" 
                                      Margin="0,0,0,10"
                                      SelectionMode="Single"
-                                     Visibility="Visible">
+                                     Visibility="Collapsed">
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="ListBoxItem">
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -350,8 +350,9 @@
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1.5*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="0.8*"/>
+                                    <ColumnDefinition Width="0.5*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox x:Name="PatientSearchTextBox" 
@@ -362,9 +363,19 @@
                                         Content="+ Новый пациент" 
                                         Style="{StaticResource SecondaryButtonStyle}"
                                         Margin="0,0,10,0"/>
-                                <Button x:Name="SpendBonusesButton" Grid.Column="2" 
-                                        Content="Потратить бонусы" 
-                                        Style="{StaticResource SecondaryButtonStyle}"/>
+                                <TextBlock x:Name="SpendBonusesButton" Grid.Column="2" 
+                                        Text="Потратить бонусы" VerticalAlignment="Center"
+                                        FontWeight="Bold" Foreground="#0277BD"/>
+                                <CheckBox x:Name="UseBonusesCheckBox" 
+                                          HorizontalAlignment="Center"
+                                          Padding="10" 
+                                          VerticalAlignment="Center" 
+                                          Grid.Column="3"
+                                          FontSize="16" Width="17">
+                                    <CheckBox.LayoutTransform>
+                                        <ScaleTransform ScaleX="1.7" ScaleY="1.7"/>
+                                    </CheckBox.LayoutTransform>
+                                </CheckBox>
                             </Grid>
 
                             <DataGrid x:Name="PatientsDataGrid" 
@@ -383,7 +394,7 @@
                                       HeadersVisibility="Column">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2*"/>
-                                    <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="1.3*"/>
+                                    <DataGridTextColumn Header="Телефон" Binding="{Binding PhoneNumber}" Width="1.3*"/>
                                     <DataGridTextColumn Header="Потрачено денег" Binding="{Binding MoneySpent}" Width="1*"/>
                                     <DataGridTextColumn Header="Бонусы" Binding="{Binding Bonuses}" Width="0.7*"/>
                                 </DataGrid.Columns>
