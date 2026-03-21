@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Web_API.Models;
 using Web_API.Utils;
 
@@ -14,12 +15,25 @@ namespace Web_API.Controllers
             _context = context;
         }
         [HttpGet("bonuses")]
-        public async Task<IActionResult> GetBonuses(int clientId)
+        public async Task<IActionResult> GetBonuses()
         {
             try
             {
+                var bonuses = await _context.Bonuses
+                    .Where(b => b.ExpiredAt > DateTime.UtcNow)
+                    .GroupBy(b => b.ClientId)
+                    .Select(b => new BonuseDTO 
+                    {
+                        ClientId = b.Key,
+                        Amount = b.Sum(g => g.Amount)
+                    })
+                    .ToDictionaryAsync
+                    (
+                        dto => dto.ClientId,  
+                        dto => dto.Amount
+                    );
 
-                return Ok();
+                return Ok(bonuses);
             }
             catch { return BadRequest(); }
         }
@@ -28,8 +42,13 @@ namespace Web_API.Controllers
         {
             try
             {
-                
-                return Ok();
+                var bonuses = _context.Bonuses.Where(b => b.ClientId == clientId)
+                    .Select(b => new BonuseDTO
+                    {
+                        ClientId = b.ClientId,
+                        Amount = b.Amount
+                    }).ToList();
+                return Ok(bonuses);
             }
             catch { return BadRequest(); }
         }

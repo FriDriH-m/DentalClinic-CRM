@@ -58,9 +58,6 @@ namespace Web_API.Utils
     }
     public class BonuseDTO
     {
-        public int Id { get; set; }
-        public DateTime AddedAt { get; set; }
-        public DateTime ExpiredAt { get; set; }
         public int Amount { get; set; }
         public int ClientId { get; set; }
     }

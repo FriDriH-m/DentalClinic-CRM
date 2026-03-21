@@ -31,6 +31,8 @@ namespace Web_API.Controllers
                     ClinicId = appointment.ClinicId,
                     EmployeeId = appointment.EmployeeId                    
                 };
+                newAppointment.Date = DateTime.SpecifyKind(newAppointment.Date, DateTimeKind.Utc);
+                newAppointment.EndTime = DateTime.SpecifyKind(newAppointment.EndTime, DateTimeKind.Utc);
                 await _context.Appointments.AddAsync(newAppointment);
                 await _context.SaveChangesAsync();
 

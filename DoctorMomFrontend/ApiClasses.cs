@@ -39,12 +39,10 @@ namespace DoctorMomFrontend.Utils
         public string Info { get; set; }
         public ClientStatus Status { get; set; }
         public int MoneySpent { get; set; }
+        public int BonuseAmount { get; set; }
     }
     public class BonuseDTO
     {
-        public int Id { get; set; }
-        public DateTime AddedAt { get; set; }
-        public DateTime ExpiredAt { get; set; }
         public int Amount { get; set; }
         public int ClientId { get; set; }
     }

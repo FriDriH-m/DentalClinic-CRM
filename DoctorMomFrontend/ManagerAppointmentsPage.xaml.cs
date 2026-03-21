@@ -3,6 +3,7 @@ using DoctorMomFrontend.Utils;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ namespace DoctorMomFrontend
         private readonly string ApiUrl = "https://localhost:7141/api/";
         private List<ServiceDTO> _allAvailableServices = new();
         private List<ClientDTO> _allClients = new();
+        private Dictionary<int, int> _allBonuses = new();
         public ObservableCollection<ServiceDTO> Services { get; set; } = new();
         private EmployeeTableDTO _selectedDoctor;
         public ManagerAppointmentsPage()
@@ -32,30 +34,71 @@ namespace DoctorMomFrontend
             PatientsDataGrid.SelectionChanged += UpdateClientInfo;
             PatientSearchTextBox.TextChanged += UpdateClientsList;
             SelectDoctorButton.Click += SaveDoctorChoose;
-            SaveButton.Click += CreateAppointment;
+            SaveButton.Click += async (s, e) => await CreateAppointment();
             AddPatientButton.Click += (s, e) => NavigationService.Navigate(new RegistrationClientPage());
             FindDoctorsButton.Click += async (s, e) => await FindFreeDoctors();
         }
 
-        private void CreateAppointment(object sender, RoutedEventArgs e)
+        private async Task CreateAppointment()
         {
-            var service = ServiceComboBox.SelectedValue as ServiceDTO;
+            var serviceId = (int)ServiceComboBox.SelectedValue;
+            var service = Services.First(s => s.Id == serviceId);
             DateTime date = (DateTime)DatePick.SelectedDate;
+            date = date.AddHours(int.Parse(HourComboBox.SelectedValue.ToString()));
+            date = date.AddMinutes(int.Parse(MinuteComboBox.SelectedValue.ToString()));
             DateTime endTime = date.AddMinutes(service.DurationMinutes);
             decimal totalPrice = service.BasePrice;
+            var clientDTO = PatientsDataGrid.SelectedItem as ClientDTO;
+            decimal discount = 0;
+
 
             if (UseBonusesCheckBox.IsChecked ?? false)
             {
-
+                if (clientDTO.BonuseAmount != 0)
+                {
+                    if (clientDTO.BonuseAmount >= totalPrice) discount = (decimal)totalPrice;
+                    else discount = (decimal)_allBonuses[clientDTO.Id];
+                }
             }
             using (HttpClient client = new HttpClient())
             {
-                AppointmentDTO newAppointment = new AppointmentDTO
+                try
                 {
-                    Date = date,
-                    EndTime = endTime,
-                    
-                };
+                    AppointmentDTO newAppointment = new AppointmentDTO
+                    {
+                        Date = date,
+                        EndTime = endTime,
+                        Discount = discount,
+                        TotalPrice = totalPrice - discount,
+                        IsClosed = false,
+                        ServiceId = serviceId,
+                        ClientId = clientDTO.Id,
+                        ClinicId = EmployeeSession.ClinicsIds[0],
+                        EmployeeId = _selectedDoctor.Id
+                    };
+                    newAppointment.Date = DateTime.SpecifyKind(newAppointment.Date, DateTimeKind.Utc);
+                    newAppointment.EndTime = DateTime.SpecifyKind(newAppointment.EndTime, DateTimeKind.Utc);
+                    var json = JsonSerializer.Serialize(newAppointment);
+                    MessageBox.Show(json);
+
+                    var response = await client.PostAsJsonAsync(ApiUrl + "appointments", newAppointment);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Запись создана");
+                    }
+                    else
+                    {
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+
+                        MessageBox.Show($"Ошибка: {errorMessage}", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }                
             }
         }
 
@@ -83,10 +126,20 @@ namespace DoctorMomFrontend
 
                 try
                 {
-                    var response = await client.GetAsync(ApiUrl + "clients");
-                    if (response.IsSuccessStatusCode)
+                    var clientsResponse = await client.GetAsync(ApiUrl + "clients");
+                    var bonusesResponse = await client.GetAsync(ApiUrl + "clients/bonuses");
+                    if (clientsResponse.IsSuccessStatusCode && bonusesResponse.IsSuccessStatusCode)
                     {
-                        _allClients = await response.Content.ReadFromJsonAsync<List<ClientDTO>>();
+                        _allClients = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>();
+
+                        _allBonuses = await bonusesResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
+
+                        foreach (var currentClient in _allClients)
+                        {
+                            if (!_allBonuses.ContainsKey(currentClient.Id)) currentClient.BonuseAmount = 0;
+                            else currentClient.BonuseAmount = _allBonuses[currentClient.Id];
+                        }
+
                         PatientsDataGrid.ItemsSource = _allClients;
                     }
                     else
@@ -172,7 +225,6 @@ namespace DoctorMomFrontend
                     {
                         List<EmployeeTableDTO> doctors = await response.Content.ReadFromJsonAsync<List<EmployeeTableDTO>>();
                         DoctorsListBox.ItemsSource = doctors;
-                        MessageBox.Show("Найдено " + doctors.Count + " врачей");
                     }
                     else
                     {
@@ -189,7 +241,6 @@ namespace DoctorMomFrontend
         private void UpdateServiceInfo(object sender, SelectionChangedEventArgs e)
         {
             int serviceId = (int)ServiceComboBox.SelectedValue;
-            MessageBox.Show("Выбранная услуга: " + serviceId);
 
             var selectedService = Services.FirstOrDefault(s => s.Id == serviceId);
             if (selectedService != null)
@@ -212,7 +263,7 @@ namespace DoctorMomFrontend
                     if (response.IsSuccessStatusCode)
                     {
                         _allAvailableServices = await response.Content.ReadFromJsonAsync<List<ServiceDTO>>();
-                        MessageBox.Show("Успех");
+                        
                     }
                     else
                     {

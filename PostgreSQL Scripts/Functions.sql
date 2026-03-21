@@ -52,7 +52,7 @@ CREATE OR REPLACE FUNCTION add_access_new_material()
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION add_bonuses_for_client()
+CREATE OR REPLACE FUNCTION add_bonuses_for_client()
 	RETURNS TRIGGER AS $$
 	BEGIN		
 		INSERT INTO "Bonuses" ("AddedAt", "ExpiredAt", "Amount", "ClientId")
@@ -62,6 +62,9 @@ CREATE FUNCTION add_bonuses_for_client()
 			FLOOR(NEW."TotalPrice" * 0.10)::INT, 
 			NEW."ClientId"
         );
+		UPDATE "Clients"
+	    SET "MoneySpent" = "MoneySpent" + NEW."TotalPrice" 
+	    WHERE "Id" = NEW."ClientId";
 		RETURN NEW;
 	END;
 $$ LANGUAGE plpgsql;
@@ -151,6 +154,49 @@ RETURNS TRIGGER AS $$
 	END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION remove_client_bonuses()
+RETURNS TRIGGER AS $$
+	DECLARE
+        discount INT;
+	    client_id INT;
+	    bonus_record RECORD;
+	    remaining_discount INT;
+	BEGIN
+	    discount = NEW."Discount";
+	    client_id = NEW."ClientId";
+	    remaining_discount = discount;
+	    
+	    IF discount = 0 OR discount IS NULL THEN
+	        RETURN NEW;
+	    END IF;
+	    
+	    FOR bonus_record IN 
+	        SELECT "Id", "Amount" 
+	        FROM "Bonuses" 
+	        WHERE "ClientId" = client_id 
+	          AND "ExpiredAt" > NOW()
+	          AND "Amount" > 0
+	        ORDER BY "ExpiredAt" ASC  --сначала истекающие
+	    LOOP
+	        IF remaining_discount <= 0 THEN
+	            EXIT;
+	        END IF;
+	        
+	        IF bonus_record."Amount" <= remaining_discount THEN
+	            remaining_discount = remaining_discount - bonus_record."Amount";
+	            DELETE FROM "Bonuses" WHERE "Id" = bonus_record."Id";
+	        ELSE
+	            UPDATE "Bonuses" 
+	            SET "Amount" = "Amount" - remaining_discount
+	            WHERE "Id" = bonus_record."Id";
+	            
+	            remaining_discount = 0;
+	        END IF;
+	    END LOOP;	    
+	    RETURN NEW;		
+	END
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE TRIGGER trg_clinic_employee_insert
 	AFTER INSERT OR DELETE ON "ClinicEmployees"
@@ -160,7 +206,7 @@ CREATE TRIGGER update_money_spent
 	AFTER INSERT OR UPDATE OR DELETE ON "Checks"
 	FOR EACH ROW EXECUTE FUNCTION update_client_status();
 
-CREATE TRIGGER add_bonuses_for_check
+CREATE OR REPLACE TRIGGER add_bonuses_for_check
 	AFTER INSERT ON "Checks"
 	FOR EACH ROW EXECUTE FUNCTION add_bonuses_for_client();
 
@@ -172,3 +218,8 @@ CREATE TRIGGER trg_add_access_new_material
     AFTER INSERT OR UPDATE ON "Materials"
     FOR EACH ROW
     EXECUTE FUNCTION add_access_new_material();
+
+CREATE TRIGGER trg_remove_client_bonuses	
+	AFTER INSERT ON "Appointments"
+	FOR EACH ROW 
+	EXECUTE FUNCTION remove_client_bonuses();
