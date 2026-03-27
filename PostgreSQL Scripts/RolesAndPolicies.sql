@@ -40,6 +40,7 @@ ALTER ROLE role_admin BYPASSRLS;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO role_analyst;
 
 GRANT SELECT ON TABLE "Appointments" TO role_doctor;
+GRANT SELECT ON TABLE "AppointmentService" TO role_doctor;
 GRANT SELECT, INSERT ON TABLE "AppointmentMaterials", "Materials" TO role_doctor;
 GRANT INSERT ON TABLE "Checks" TO role_doctor;
 

@@ -5,7 +5,8 @@ namespace Web_API.Utils
 {
     public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
     public record LoginUserDTO(string Login, string Password);
-    public record RegisterService(ServiceDTO service, int[] materialsId);
+    public record RegisterService(ServiceDTO service, Dictionary<int, int> materialsId);
+    public record ServiceMaterialDTO(ServiceDTO service, MaterialDTO material);
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }

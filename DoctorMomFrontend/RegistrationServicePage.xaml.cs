@@ -62,11 +62,12 @@ namespace DoctorMomFrontend
             }
 
             int countMaterials = _selectedMaterials.Count;
-            int[] materialsId = new int[countMaterials];
+            Dictionary<int, int> materialsId = new();
 
             for (int i = 0; i < countMaterials; i++)
             {
-                materialsId[i] = _selectedMaterials[i].Id;
+                var currentMaterial = _selectedMaterials[i];
+                materialsId.Add(currentMaterial.Id, currentMaterial.Count);
             }
 
             ServiceDTO newService = new ServiceDTO

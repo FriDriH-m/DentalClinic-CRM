@@ -154,11 +154,11 @@ namespace Web_API.Controllers
                 _context.ServiceMaterials.RemoveRange(oldLinks);
 
                 // 4. Добавляем новые связи
-                if (service.materialsId != null && service.materialsId.Length > 0)
+                if (service.materialsId != null && service.materialsId.Count > 0)
                 {
                     foreach (var materialId in service.materialsId)
                     {
-                        var materialExists = await _context.Materials.AnyAsync(m => m.Id == materialId);
+                        var materialExists = await _context.Materials.AnyAsync(m => m.Id == materialId.Key);
                         if (!materialExists)
                         {
                             return BadRequest($"Материал с Id {materialId} не найден");
@@ -167,7 +167,8 @@ namespace Web_API.Controllers
                         await _context.ServiceMaterials.AddAsync(new ServiceMaterials
                         {
                             ServiceId = id,
-                            MaterialId = materialId
+                            MaterialId = materialId.Key,
+                            Count = materialId.Value
                         });
                     }
                 }
@@ -194,18 +195,19 @@ namespace Web_API.Controllers
                     BasePrice = serviceDTO.BasePrice,
                     CategoryName = serviceDTO.CategoryName,
                     CategoryId = serviceDTO.CategoryId,
-                    ClinicId = serviceDTO.ClinicId,
+                    ClinicId = serviceDTO.ClinicId
                 };
 
                 await _context.Services.AddAsync(newService);
                 await _context.SaveChangesAsync();
 
-                for (int i = 0; i < service.materialsId.Length; i++)
+                foreach (var material in service.materialsId)
                 {
                     ServiceMaterials link = new ServiceMaterials
                     {
-                        MaterialId = service.materialsId[i],
-                        ServiceId = newService.Id
+                        MaterialId = material.Key,
+                        ServiceId = newService.Id,
+                        Count = material.Value
                     };
                     await _context.ServiceMaterials.AddAsync(link);
                 }
@@ -218,6 +220,35 @@ namespace Web_API.Controllers
                 return StatusCode(500, $"Ошибка сервера: {ex.Message}");
             }
         }
+        [HttpGet("services/{serviceId}/materials/availability")]
+        public async Task<IActionResult> CheckMaterialsAvailability(int serviceId, int clinicId)
+        {
+            var serviceMaterials = await _context.ServiceMaterials
+                .Include(sm => sm.Material)
+                .Where(sm => sm.ServiceId == serviceId && sm.Material.ClinicId == clinicId)
+                .ToListAsync();
+
+            if (serviceMaterials.Count == 0)
+            {
+                return Ok();
+            }                
+
+            var availability = serviceMaterials.Select(sm => new 
+            {
+                IsAvailable = sm.Material.Count >= sm.Count,    
+            }).ToList();
+
+            bool allAvailable = availability.All(a => a.IsAvailable);
+
+            if (allAvailable)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Недостаточно материалов на складе");
+            }
+        }
         [HttpGet("services/{id}/materials")]
         public async Task<IActionResult> GetServiceMaterials(int id)
         {
@@ -228,12 +259,13 @@ namespace Web_API.Controllers
                     .Where(sm => sm.ServiceId == id)
                     .Select(m => new MaterialDTO
                     {
+                        Id = m.Material.Id,
                         Name = m.Material.Name,
                         Description = m.Material.Description,
                         IsCertifiedMaterial = m.Material.IsCertifiedMaterial,
                         PurchasePrice = m.Material.PurchasePrice,
                         Price = m.Material.Price,
-                        Count = m.Material.Count,
+                        Count = m.Count,
                         ClinicId = m.Material.ClinicId
                     })
                     .ToListAsync();

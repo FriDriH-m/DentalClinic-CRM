@@ -14,6 +14,116 @@ namespace Web_API.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllAppointments()
+        {
+            try
+            {
+                var appointments = _context.Appointments
+                    .Select(a => new AppointmentDTO
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        EndTime = a.EndTime,
+                        Status = a.Status,
+                        TotalPrice = a.TotalPrice,
+                        Discount = a.Discount,
+                        IsClosed = a.IsClosed,
+                        ClientId = a.ClientId,
+                        ClinicId = a.ClinicId,
+                        ServiceId = _context.AppointmentService
+                                    .Where(s => s.AppointmentId == a.Id)
+                                    .Select(s => s.ServiceId)
+                                    .FirstOrDefault(),
+                        EmployeeId = a.EmployeeId,
+                    })
+                    .ToList();
+
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("free_doctors")]
+        public async Task<IActionResult> GetFreeDoctorsAsync([FromQuery] DateTime datetime, [FromQuery] int serviceId)
+        {
+            bool needCertifiedDoctor = false;
+            var service = await _context.Services.FindAsync(serviceId);
+            if (service == null) return BadRequest("Услуга не найдена");
+
+            var serviceMaterial = await _context.ServiceMaterials
+                .Include(m => m.Material)
+                .Where(m => m.ServiceId == serviceId)
+                .ToListAsync(); 
+
+            foreach (var material in serviceMaterial)
+            {
+                if (material.Material.IsCertifiedMaterial)
+                {
+                    needCertifiedDoctor = true;
+                }
+            }
+
+            var doctors = await _context.DoctorCategorySkills
+                .Include(dcs => dcs.Employee)
+                    .ThenInclude(e => e.Appointments)
+                .Select(dcs => dcs.Employee)
+                .Distinct()
+                .ToListAsync(); 
+
+            int duration = service.DurationMinutes; 
+            var appointmentEnd = datetime.AddMinutes(duration);
+
+            var freeDoctors = doctors
+                .Where(e => !e.Appointments.Any(a =>
+                    a.Date.Date == datetime.Date &&  // Тот же день
+                    a.Date < appointmentEnd &&        // Пересечение
+                    a.EndTime > datetime
+                ))
+                .ToList();
+
+            
+
+            var result = freeDoctors.Select(e => new EmployeeTableDTO
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                SecondName = e.SecondName,
+                PhoneNumber = e.PhoneNumber,
+                Specialization = e.Specialization,
+                Info = e.Info,
+                IsCertified = e.IsCertified ?? false,
+                Age = e.Age,
+                Salary = e.Salary,
+                Experience = e.Experience,
+                DbUsername = e.DbUsername
+            }).ToList();
+
+            if (needCertifiedDoctor)
+            {
+                result = result.Where(d => d.IsCertified == true).ToList();
+            }
+
+            return Ok(result);
+        }
+        [HttpPatch("{appointmentId}/{status}")]
+        public async Task<IActionResult> CloseAppointment(int appointmentId, AppointmentStatus status)
+        {
+            try
+            {
+                var appointment = await _context.Appointments.FindAsync(appointmentId);
+                appointment.Status = status;
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Не удалось закрыть запись");
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> RegisterAppointment([FromBody] AppointmentDTO appointment)
         {
@@ -23,20 +133,19 @@ namespace Web_API.Controllers
                 {
                     Date = appointment.Date,
                     EndTime = appointment.EndTime,
-                    Status = appointment.Status,
-                    TotalPrice = appointment.TotalPrice,
+                    TotalPrice = appointment.TotalPrice,                    
                     Discount = appointment.Discount,
                     IsClosed = false,
                     ClientId = appointment.ClientId,
                     ClinicId = appointment.ClinicId,
-                    EmployeeId = appointment.EmployeeId                    
+                    EmployeeId = appointment.EmployeeId
                 };
                 newAppointment.Date = DateTime.SpecifyKind(newAppointment.Date, DateTimeKind.Utc);
                 newAppointment.EndTime = DateTime.SpecifyKind(newAppointment.EndTime, DateTimeKind.Utc);
                 await _context.Appointments.AddAsync(newAppointment);
                 await _context.SaveChangesAsync();
 
-                AppointmentService appointmentService = new AppointmentService 
+                AppointmentService appointmentService = new AppointmentService
                 {
                     AppointmentId = newAppointment.Id,
                     ServiceId = appointment.ServiceId
@@ -65,51 +174,10 @@ namespace Web_API.Controllers
 
                 return Ok();
             }
-            catch
+            catch (Exception ex) 
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
-        }
-        [HttpGet("free_doctors")]
-        public async Task<IActionResult> GetFreeDoctorsAsync([FromQuery] DateTime datetime, [FromQuery] int serviceId)
-        {
-            var service = await _context.Services.FindAsync(serviceId);
-            if (service == null) return BadRequest("Услуга не найдена");
-
-            var doctors = await _context.DoctorCategorySkills
-                .Include(dcs => dcs.Employee)
-                    .ThenInclude(e => e.Appointments)
-                .Select(dcs => dcs.Employee)
-                .Distinct()
-                .ToListAsync(); 
-
-            int duration = service.DurationMinutes; 
-            var appointmentEnd = datetime.AddMinutes(duration);
-
-            var freeDoctors = doctors
-                .Where(e => !e.Appointments.Any(a =>
-                    a.Date.Date == datetime.Date &&  // Тот же день
-                    a.Date < appointmentEnd &&        // Пересечение
-                    a.EndTime > datetime
-                ))
-                .ToList();
-
-            var result = freeDoctors.Select(e => new EmployeeTableDTO
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                SecondName = e.SecondName,
-                PhoneNumber = e.PhoneNumber,
-                Specialization = e.Specialization,
-                Info = e.Info,
-                IsCertified = e.IsCertified ?? false,
-                Age = e.Age,
-                Salary = e.Salary,
-                Experience = e.Experience,
-                DbUsername = e.DbUsername
-            }).ToList();
-
-            return Ok(result);
         }
     }
 }

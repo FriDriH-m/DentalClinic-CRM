@@ -26,29 +26,45 @@ namespace DoctorMomFrontend
             InitializeComponent();
             InitializeTimeComboBoxes();
             DataContext = this;
-            Loaded += async (s, e) => await LoadServices();
-            Loaded += async (s, e) => await LoadClients();
+            Loaded += async (s, e) => await GetDataFromDB();
+
+            LogoutButton.Click += (s, e) =>
+            {
+                NavigationService.Navigate(new AuthorizePage());
+                EmployeeSession.Clear();
+            };
 
             ServiceComboBox.SelectionChanged += UpdateServiceInfo;
             DoctorsListBox.SelectionChanged += UpdateDoctorSelect;
             PatientsDataGrid.SelectionChanged += UpdateClientInfo;
+
             PatientSearchTextBox.TextChanged += UpdateClientsList;
+
             SelectDoctorButton.Click += SaveDoctorChoose;
             SaveButton.Click += async (s, e) => await CreateAppointment();
+            BackButton.Click += (s, e) => NavigationService.GoBack();
+            AppointmentsPageButton.Click += (s, e) => NavigationService.Navigate(new ManagerAppointmentsPage());
+            ClientsPageButton.Click += (s, e) => NavigationService.Navigate(new ManagerClientsPage());
             AddPatientButton.Click += (s, e) => NavigationService.Navigate(new RegistrationClientPage());
             FindDoctorsButton.Click += async (s, e) => await FindFreeDoctors();
         }
-
         private async Task CreateAppointment()
         {
+            if (_selectedDoctor == null)
+            {
+                MessageBox.Show("Выберите доктора");
+                return;
+            }            
             var serviceId = (int)ServiceComboBox.SelectedValue;
             var service = Services.First(s => s.Id == serviceId);
+            var clientDTO = PatientsDataGrid.SelectedItem as ClientDTO;
+
             DateTime date = (DateTime)DatePick.SelectedDate;
             date = date.AddHours(int.Parse(HourComboBox.SelectedValue.ToString()));
             date = date.AddMinutes(int.Parse(MinuteComboBox.SelectedValue.ToString()));
             DateTime endTime = date.AddMinutes(service.DurationMinutes);
-            decimal totalPrice = service.BasePrice;
-            var clientDTO = PatientsDataGrid.SelectedItem as ClientDTO;
+
+            decimal totalPrice = service.BasePrice;            
             decimal discount = 0;
 
 
@@ -62,6 +78,12 @@ namespace DoctorMomFrontend
             }
             using (HttpClient client = new HttpClient())
             {
+                var checkAvailability = await client.GetAsync(ApiUrl + "clinics/services/" + serviceId + "/materials/availability");
+                if (!checkAvailability.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Недостаточно материалов для услуги");
+                    return;
+                }
                 try
                 {
                     AppointmentDTO newAppointment = new AppointmentDTO
@@ -70,16 +92,24 @@ namespace DoctorMomFrontend
                         EndTime = endTime,
                         Discount = discount,
                         TotalPrice = totalPrice - discount,
+                        Status = AppointmentStatus.Pending,
                         IsClosed = false,
                         ServiceId = serviceId,
                         ClientId = clientDTO.Id,
                         ClinicId = EmployeeSession.ClinicsIds[0],
                         EmployeeId = _selectedDoctor.Id
                     };
+
+                    MessageBox.Show($"ServiceId:{serviceId} " +
+                        $"ClientId:{clientDTO.Id} " +
+                        $"DoctorId:{_selectedDoctor.Id}" +
+                        $"ClinicId:{EmployeeSession.ClinicsIds[0]}" +
+                        $"TotalPrice:{totalPrice - discount}" +
+                        $"{discount}" +
+                        $"{endTime}" +
+                        $"{date}");
                     newAppointment.Date = DateTime.SpecifyKind(newAppointment.Date, DateTimeKind.Utc);
                     newAppointment.EndTime = DateTime.SpecifyKind(newAppointment.EndTime, DateTimeKind.Utc);
-                    var json = JsonSerializer.Serialize(newAppointment);
-                    MessageBox.Show(json);
 
                     var response = await client.PostAsJsonAsync(ApiUrl + "appointments", newAppointment);
                     if (response.IsSuccessStatusCode)
@@ -101,12 +131,10 @@ namespace DoctorMomFrontend
                 }                
             }
         }
-
         private void UpdateClientsList(object sender, TextChangedEventArgs e)
         {
             PatientsDataGrid.ItemsSource = _allClients.Where(c => c.FullName.Contains(PatientSearchTextBox.Text));
         }
-
         private void UpdateClientInfo(object sender, SelectionChangedEventArgs e)
         {
             ClientInfoPanel.Visibility = Visibility.Visible;
@@ -117,50 +145,42 @@ namespace DoctorMomFrontend
             ClientEmailText.Text = client.Email;
             ClientNotesText.Text = client.Info;
         }
-
-        private async Task LoadClients()
+        private async Task LoadClients(HttpClient client)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                client.AddHeaders();
-
-                try
+                var clientsResponse = await client.GetAsync(ApiUrl + "clients");
+                var bonusesResponse = await client.GetAsync(ApiUrl + "clients/bonuses");
+                if (clientsResponse.IsSuccessStatusCode && bonusesResponse.IsSuccessStatusCode)
                 {
-                    var clientsResponse = await client.GetAsync(ApiUrl + "clients");
-                    var bonusesResponse = await client.GetAsync(ApiUrl + "clients/bonuses");
-                    if (clientsResponse.IsSuccessStatusCode && bonusesResponse.IsSuccessStatusCode)
+                    _allClients = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>();
+
+                    _allBonuses = await bonusesResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
+
+                    foreach (var currentClient in _allClients)
                     {
-                        _allClients = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>();
-
-                        _allBonuses = await bonusesResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
-
-                        foreach (var currentClient in _allClients)
-                        {
-                            if (!_allBonuses.ContainsKey(currentClient.Id)) currentClient.BonuseAmount = 0;
-                            else currentClient.BonuseAmount = _allBonuses[currentClient.Id];
-                        }
-
-                        PatientsDataGrid.ItemsSource = _allClients;
+                        if (!_allBonuses.ContainsKey(currentClient.Id)) currentClient.BonuseAmount = 0;
+                        else currentClient.BonuseAmount = _allBonuses[currentClient.Id];
                     }
-                    else
-                    {
-                        MessageBox.Show("Не удалось получить ответ от сервера");
-                    }
+
+                    PatientsDataGrid.ItemsSource = _allClients;
                 }
-                catch
+                else
                 {
-                    MessageBox.Show("Не удалось получить клиентов");
+                    MessageBox.Show("Не удалось получить ответ от сервера");
                 }
             }
+            catch
+            {
+                MessageBox.Show("Не удалось получить клиентов");
+            }
         }
-
         private void SaveDoctorChoose(object sender, RoutedEventArgs e)
         {
             DoctorsListBox.Visibility = Visibility.Collapsed;
             SelectedDoctorPanel.Visibility = Visibility.Visible;
             SelectDoctorButton.Visibility = Visibility.Collapsed;
         }
-
         private void UpdateDoctorSelect(object sender, SelectionChangedEventArgs e)
         {
             if (DoctorsListBox.SelectedValue == null) return;
@@ -171,7 +191,6 @@ namespace DoctorMomFrontend
             _selectedDoctor = doctor;
             SelectedDoctorText.Text = doctor.FullName + " " + doctor.Specialization;
         }
-
         private void InitializeTimeComboBoxes()
         {
             for (int hour = 8; hour <= 22; hour++)
@@ -186,7 +205,6 @@ namespace DoctorMomFrontend
             }
             MinuteComboBox.SelectedIndex = 0; 
         }
-
         private async Task FindFreeDoctors()
         {
             if (HourComboBox.SelectedItem == null || MinuteComboBox.SelectedItem == null
@@ -209,7 +227,6 @@ namespace DoctorMomFrontend
 
             await GetDoctorsAsync(date, serviceId);
         }
-
         private async Task GetDoctorsAsync(DateTime dateTime, int serviceId)
         {
             using (HttpClient client = new HttpClient())
@@ -237,9 +254,16 @@ namespace DoctorMomFrontend
                 }
             }
         }
-
         private void UpdateServiceInfo(object sender, SelectionChangedEventArgs e)
         {
+            if (DoctorsListBox.Visibility != Visibility.Collapsed)
+            {
+                DoctorsListBox.ItemsSource = null;
+                DoctorsListBox.Visibility = Visibility.Collapsed;
+            }
+            _selectedDoctor = null;            
+            SelectedDoctorText.Text = string.Empty;
+            SelectedDoctorPanel.Visibility = Visibility.Collapsed;
             int serviceId = (int)ServiceComboBox.SelectedValue;
 
             var selectedService = Services.FirstOrDefault(s => s.Id == serviceId);
@@ -250,30 +274,34 @@ namespace DoctorMomFrontend
                 ServiceDurationText.Text = Convert.ToString(selectedService.DurationMinutes) + " минут";
             }
         }
-
-        private async Task LoadServices()
+        private async Task GetDataFromDB()
         {
             using (HttpClient client = new HttpClient())
             {
                 client.AddHeaders();
 
-                for (int i = 0; i < EmployeeSession.ClinicsIds.Length; i++)
-                {
-                    var response = await client.GetAsync(ApiUrl + "clinics/services/" + EmployeeSession.ClinicsIds[i]);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        _allAvailableServices = await response.Content.ReadFromJsonAsync<List<ServiceDTO>>();
-                        
-                    }
-                    else
-                    {
-                        var error = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show(error);
-                    }
-                }
-
-                foreach (var item in _allAvailableServices) Services.Add(item);
+                await LoadServices(client);
+                await LoadClients(client);
             }
+        }
+        private async Task LoadServices(HttpClient client)
+        {
+            for (int i = 0; i < EmployeeSession.ClinicsIds.Length; i++)
+            {
+                var response = await client.GetAsync(ApiUrl + "clinics/services/" + EmployeeSession.ClinicsIds[i]);
+                if (response.IsSuccessStatusCode)
+                {
+                    _allAvailableServices = await response.Content.ReadFromJsonAsync<List<ServiceDTO>>();
+
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show(error);
+                }
+            }
+
+            foreach (var item in _allAvailableServices) Services.Add(item);
         }
     }
 }

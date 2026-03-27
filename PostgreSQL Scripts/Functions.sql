@@ -54,12 +54,27 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION add_bonuses_for_client()
 	RETURNS TRIGGER AS $$
+	DECLARE
+		client_status INT;
+        bonus_percent FLOAT;
 	BEGIN		
+		SELECT "Status" INTO client_status 
+        	FROM "Clients" 
+        	WHERE "Id" = NEW."ClientId";
+		
+		IF client_status = 0 THEN 
+            bonus_percent := 0.05;
+        ELSIF client_status = 1 THEN
+            bonus_percent := 0.1;
+        ELSE 
+            bonus_percent := 0.2;
+        END IF;
+		
 		INSERT INTO "Bonuses" ("AddedAt", "ExpiredAt", "Amount", "ClientId")
 		VALUES (
 			NOW(), 
 			NOW() + INTERVAL '1 year',
-			FLOOR(NEW."TotalPrice" * 0.10)::INT, 
+			FLOOR(NEW."TotalPrice" * bonus_percent)::INT, 
 			NEW."ClientId"
         );
 		UPDATE "Clients"
@@ -223,3 +238,5 @@ CREATE TRIGGER trg_remove_client_bonuses
 	AFTER INSERT ON "Appointments"
 	FOR EACH ROW 
 	EXECUTE FUNCTION remove_client_bonuses();
+
+CREATE

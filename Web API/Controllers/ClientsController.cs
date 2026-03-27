@@ -14,6 +14,23 @@ namespace Web_API.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        public IActionResult GetAllClients()
+        {
+            var allClients = _context.Clients
+                .Select(c => new ClientDTO
+                {
+                    Id = c.Id,
+                    Status = c.Status,
+                    MoneySpent = c.MoneySpent,
+                    FirstName = c.FirstName,
+                    SecondName = c.SecondName,
+                    Info = c.Info,
+                    Email = c.Email,
+                    PhoneNumber = c.PhoneNumber,
+                }).ToList();
+            return Ok(allClients);
+        }
         [HttpGet("bonuses")]
         public async Task<IActionResult> GetBonuses()
         {
@@ -51,24 +68,7 @@ namespace Web_API.Controllers
                 return Ok(bonuses);
             }
             catch { return BadRequest(); }
-        }
-        [HttpGet]
-        public IActionResult GetAllClients()
-        {
-            var allClients = _context.Clients
-                .Select(c => new ClientDTO 
-                { 
-                    Id = c.Id,
-                    Status = c.Status,
-                    MoneySpent = c.MoneySpent,
-                    FirstName = c.FirstName,
-                    SecondName = c.SecondName,
-                    Info = c.Info,
-                    Email = c.Email,
-                    PhoneNumber = c.PhoneNumber,
-                }).ToList();
-            return Ok(allClients);
-        }
+        }        
         [HttpPost("register")]
         public async Task<IActionResult> RegisterClientsAsync([FromBody] ClientDTO clientDTO)
         {
@@ -83,6 +83,29 @@ namespace Web_API.Controllers
                     Email = clientDTO.Email
                 };
                 await _context.Clients.AddAsync(newClient);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateClientInfo([FromBody] ClientDTO clientDTO)
+        {
+            try
+            {
+                var client = await _context.Clients.FindAsync(clientDTO.Id);
+                if (client == null) return NotFound("Пользователь не найден");
+
+                client.FirstName = clientDTO.FirstName;
+                client.SecondName = clientDTO.SecondName;
+                client.Info = clientDTO.Info;
+                client.PhoneNumber = clientDTO.PhoneNumber;
+                client.Email = clientDTO.Email;
+
                 await _context.SaveChangesAsync();
 
                 return Ok();

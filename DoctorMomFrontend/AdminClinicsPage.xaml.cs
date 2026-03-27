@@ -21,6 +21,11 @@ namespace DoctorMomFrontend
         {
             InitializeComponent();
             DataContext = this;
+            LogoutButton.Click += (s, e) =>
+            {
+                NavigationService.Navigate(new AuthorizePage());
+                EmployeeSession.Clear();
+            };
             Loaded += async (s, e) => await LoadClinicsAsync();
             AddClinicButton.Click += LoadRegistrationClinicPage;
             EmployyesPageButton.Click += OpenEmployeesPage;

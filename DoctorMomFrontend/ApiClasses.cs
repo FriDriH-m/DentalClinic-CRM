@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 
@@ -16,6 +17,7 @@ namespace DoctorMomFrontend.Utils
         {
             EmployeeId = 0;
             Role = null;
+            ClinicsIds = new int[0];
         }
     }
     public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
@@ -40,6 +42,30 @@ namespace DoctorMomFrontend.Utils
         public ClientStatus Status { get; set; }
         public int MoneySpent { get; set; }
         public int BonuseAmount { get; set; }
+    }
+    public class AppointmentModelView : INotifyPropertyChanged
+    {
+        private AppointmentStatus _status;
+        public DateTime Date { get; set; }
+        public AppointmentStatus Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged(nameof(Status)); 
+            }
+        }
+        public string ClientName { get; set; }
+        public string EmployeeName { get; set; }
+        public string ServiceName { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
     public class BonuseDTO
     {
@@ -72,7 +98,8 @@ namespace DoctorMomFrontend.Utils
         public int ClinicId { get; set; }
         public string ClinicAddress { get; set; }
     }
-    public record RegisterService(ServiceDTO service, int[] materialsId);
+    public record ServiceMaterialDTO(ServiceDTO service, MaterialDTO material);
+    public record RegisterService(ServiceDTO service, Dictionary<int, int> materialsId);
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }

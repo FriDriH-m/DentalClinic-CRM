@@ -45,7 +45,7 @@
 
                 <Separator Background="#26C6DA" Margin="0,20"/>
 
-                <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+                <Button x:Name="LogoutButton" Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
             </StackPanel>
         </Border>
 

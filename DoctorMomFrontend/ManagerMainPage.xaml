@@ -36,13 +36,13 @@
 
                 <TextBlock Text="РАБОЧЕЕ МЕСТО" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Button Content="📅 Записи на прием" Style="{StaticResource MenuButtonStyle}" Background="#01579B"/>
-                <Button Content="👥 База пациентов" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="AppointmentsPageButton" Content="📅 Записи на прием" Style="{StaticResource MenuButtonStyle}" Background="#01579B"/>
+                <Button x:Name="ClientsPageButton" Content="👥 База пациентов" Style="{StaticResource MenuButtonStyle}"/>
                 <Button Content="💳 Счета и оплата" Style="{StaticResource MenuButtonStyle}"/>
 
                 <Separator Background="#26C6DA" Margin="0,20"/>
 
-                <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+                <Button x:Name="LogoutButton" Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
             </StackPanel>
         </Border>
 
@@ -61,31 +61,11 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Управление записями" FontSize="26" FontWeight="Bold" Foreground="#01579B" VerticalAlignment="Center"/>
-
-                <Border Grid.Column="2" Background="White" CornerRadius="8" BorderBrush="#B3E5FC" BorderThickness="2" Padding="5,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox x:Name="SearchBox" Grid.Column="0" VerticalAlignment="Center" BorderThickness="0" 
-                                 FontSize="14" Padding="5" Text="Поиск пациента..."/>
-                        <Button Grid.Column="1" Content="🔍" Background="Transparent" BorderThickness="0" Cursor="Hand"/>
-                    </Grid>
-                </Border>
+               
             </Grid>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
                 <Button x:Name="NewAppointmentButton" Content="+ Новая запись" Padding="20,10" Background="#0288D1" Foreground="White" FontWeight="Bold" Cursor="Hand">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-
-                <Button x:Name="NewClientButton"
-                        Content="+ Новый пациент" Margin="15,0,0,0" Padding="20,10" Background="#43A047" Foreground="White" FontWeight="Bold" Cursor="Hand">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -104,7 +84,7 @@
                           GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
                           RowHeight="40" FontSize="14" HeadersVisibility="Column">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Время и Дата" Binding="{Binding DateTime}" Width="1.5*"/>
+                        <DataGridTextColumn Header="Время и Дата" Binding="{Binding Date}" Width="1.5*"/>
                         <DataGridTextColumn Header="Пациент" Binding="{Binding ClientName}" Width="2*"/>
                         <DataGridTextColumn Header="Врач (Ответственный)" Binding="{Binding EmployeeName}" Width="2*"/>
                         <DataGridTextColumn Header="Услуга" Binding="{Binding ServiceName}" Width="2*"/>

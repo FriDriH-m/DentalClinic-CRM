@@ -124,12 +124,12 @@
                 <TextBlock Text="DoctorMom" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,0,0,30"/>
                 <TextBlock Text="РАБОЧЕЕ МЕСТО" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <Button Content="📅 Записи на прием" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="👥 База пациентов" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="AppointmentsPageButton" Content="📅 Записи на прием" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="ClientsPageButton" Content="👥 База пациентов" Style="{StaticResource MenuButtonStyle}"/>
                 <Button Content="💳 Счета и оплата" Style="{StaticResource MenuButtonStyle}"/>
 
                 <Separator Background="#26C6DA" Margin="0,20"/>
-                <Button Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+                <Button x:Name="LogoutButton" Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
             </StackPanel>
         </Border>
 

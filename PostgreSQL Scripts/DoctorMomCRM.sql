@@ -9,7 +9,7 @@ SELECT
     (random() * 100 + 10)::int,                          -- Сумма от 10 до 110
     7                                                     -- ClientId
 FROM generate_series(1, 500) AS g(s);
-
+SELECT * FROM "AppointmentService";
 SELECT * FROM "Appointments";
 SELECT * FROM "AppointmentMaterial";
 SELECT * FROM "Clients";
@@ -26,6 +26,8 @@ SELECT * FROM "Bonuses";
 SELECT grantee, privilege_type 
 FROM information_schema.role_table_grants 
 WHERE table_name = 'Clinics';
+
+
 
 SELECT rolname, rolcanlogin, rolsuper, rolcreaterole 
 FROM pg_roles 

@@ -24,7 +24,11 @@ namespace DoctorMomFrontend
             Loaded += async (s, e) => await LoadAllServices();
             Loaded += async (s, e) => await LoadClinicsAsync();
             Loaded += async (s, e) => await LoadAllMaterials();
-
+            LogoutButton.Click += (s, e) =>
+            {
+                NavigationService.Navigate(new AuthorizePage());
+                EmployeeSession.Clear();
+            };
             EmployyesPageButton.Click += OpenEmployeesPage;
             ClinicsPageButton.Click += OpenClinicsPage;
             ServicesPageButton.Click += OpenServicesPage;
