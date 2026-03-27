@@ -13,6 +13,7 @@ namespace Web_API.Utils
         public DatabaseUserDTO DatabaseUserDTO { get; set; }
         public string ClinicLocation { get; set; }
     }
+    public record AppointmentMaterialsChange(AppointmentDTO appointmentDTO, decimal priceChange);
     public class MaterialDTO
     {
         public int Id { get; set; }
@@ -57,6 +58,14 @@ namespace Web_API.Utils
         public string PhoneNumber { get; set; }
         public int EmployeesCount { get; set; }
     }
+    public class AppointmentMaterialDTO
+    {
+        public int AppointmentId { get; set; }
+        public int MaterialId { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        
+    }
     public class BonuseDTO
     {
         public int Amount { get; set; }
@@ -75,6 +84,7 @@ namespace Web_API.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
+        public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class EmployeeTableDTO
     {

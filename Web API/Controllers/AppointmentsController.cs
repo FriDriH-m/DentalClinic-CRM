@@ -14,37 +14,15 @@ namespace Web_API.Controllers
         {
             _context = context;
         }
+        [HttpGet("{clientId}")]
+        public async Task<IActionResult> GetClientAppointments(int clientId)
+        {
+            return await FindAppointments(clientId);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllAppointments()
         {
-            try
-            {
-                var appointments = _context.Appointments
-                    .Select(a => new AppointmentDTO
-                    {
-                        Id = a.Id,
-                        Date = a.Date,
-                        EndTime = a.EndTime,
-                        Status = a.Status,
-                        TotalPrice = a.TotalPrice,
-                        Discount = a.Discount,
-                        IsClosed = a.IsClosed,
-                        ClientId = a.ClientId,
-                        ClinicId = a.ClinicId,
-                        ServiceId = _context.AppointmentService
-                                    .Where(s => s.AppointmentId == a.Id)
-                                    .Select(s => s.ServiceId)
-                                    .FirstOrDefault(),
-                        EmployeeId = a.EmployeeId,
-                    })
-                    .ToList();
-
-                return Ok(appointments);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return await FindAppointments(0);
         }
         [HttpGet("free_doctors")]
         public async Task<IActionResult> GetFreeDoctorsAsync([FromQuery] DateTime datetime, [FromQuery] int serviceId)
@@ -108,20 +86,32 @@ namespace Web_API.Controllers
 
             return Ok(result);
         }
-        [HttpPatch("{appointmentId}/{status}")]
-        public async Task<IActionResult> CloseAppointment(int appointmentId, AppointmentStatus status)
+        [HttpGet("materials/{appointmentId}")]
+        public async Task<IActionResult> GetAppointmentsMaterials(int appointmentId)
         {
             try
             {
-                var appointment = await _context.Appointments.FindAsync(appointmentId);
-                appointment.Status = status;
+                var materials = await _context.AppointmentMaterial
+                    .Include(am => am.Material)
+                    .Where(am => am.AppointmentId == appointmentId)
+                    .Select(m => new MaterialDTO
+                    {
+                        Id = m.Material.Id,
+                        Name = m.Material.Name,
+                        Description = m.Material.Description,
+                        IsCertifiedMaterial = m.Material.IsCertifiedMaterial,
+                        PurchasePrice = m.Material.PurchasePrice,
+                        Price = m.Material.Price,
+                        Count = m.Quantity,
+                        ClinicId = m.Material.ClinicId
+                    })
+                    .ToListAsync();
 
-                await _context.SaveChangesAsync();
-                return Ok();
+                return Ok(materials);
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Не удалось закрыть запись");
+                return BadRequest(ex.Message);
             }
         }
         [HttpPost]
@@ -133,7 +123,7 @@ namespace Web_API.Controllers
                 {
                     Date = appointment.Date,
                     EndTime = appointment.EndTime,
-                    TotalPrice = appointment.TotalPrice,                    
+                    TotalPrice = appointment.TotalPrice,
                     Discount = appointment.Discount,
                     IsClosed = false,
                     ClientId = appointment.ClientId,
@@ -174,7 +164,106 @@ namespace Web_API.Controllers
 
                 return Ok();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("materials")]
+        public async Task<IActionResult> ChangeAppointmentMaterials(
+            [FromBody] AppointmentMaterialsChange appointmentChanges)
+        {
+            try
+            {
+                var oldLinks = await _context.AppointmentMaterial
+                    .Where(m => m.AppointmentId == appointmentChanges.appointmentDTO.Id)
+                    .ToListAsync();
+
+                _context.AppointmentMaterial.RemoveRange(oldLinks);
+
+                if (appointmentChanges.appointmentDTO.MaterialsId != null && appointmentChanges.appointmentDTO.MaterialsId.Count > 0)
+                {
+                    foreach (var materialId in appointmentChanges.appointmentDTO.MaterialsId)
+                    {
+                        var materialExists = await _context.Materials.FindAsync(materialId.Key);
+                        if (materialExists == null)
+                        {
+                            return BadRequest($"Материал с Id {materialId} не найден");
+                        }
+
+                        await _context.AppointmentMaterial.AddAsync(new AppointmentMaterial
+                        {
+                            AppointmentId = appointmentChanges.appointmentDTO.Id,
+                            MaterialId = materialId.Key,
+                            Quantity = materialId.Value,
+                            Price = materialExists.Price
+                        });
+                    }
+                }
+
+                var appointment = await _context.Appointments.FindAsync(appointmentChanges.appointmentDTO.Id);
+
+                appointment.TotalPrice += appointmentChanges.priceChange;
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPatch("{appointmentId}/{status}")]
+        public async Task<IActionResult> CloseAppointment(int appointmentId, AppointmentStatus status)
+        {
+            try
+            {
+                var appointment = await _context.Appointments.FindAsync(appointmentId);
+                appointment.Status = status;
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Не удалось закрыть запись");
+            }
+        }
+        
+        private async Task<IActionResult> FindAppointments(int clientId)
+        {
+            try
+            {
+                var appointmentsQuery = _context.Appointments.AsQueryable();
+
+                if (clientId != 0)
+                {
+                    appointmentsQuery = appointmentsQuery.Where(a => a.ClientId == clientId);
+                }
+                
+                var appointmentsList = await appointmentsQuery
+                    .Select(a => new AppointmentDTO
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        EndTime = a.EndTime,
+                        Status = a.Status,
+                        TotalPrice = a.TotalPrice,
+                        Discount = a.Discount,
+                        IsClosed = a.IsClosed,
+                        ClientId = a.ClientId,
+                        ClinicId = a.ClinicId,
+                        ServiceId = _context.AppointmentService
+                                        .Where(s => s.AppointmentId == a.Id)
+                                        .Select(s => s.ServiceId)
+                                        .FirstOrDefault(),
+                        EmployeeId = a.EmployeeId,
+                    })
+                    .ToListAsync();
+
+                return Ok(appointmentsList);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

@@ -7,6 +7,11 @@ namespace DoctorMomFrontend.Utils
 {
     public enum ClientStatus { Regular = 0, Loyal = 1, Premium = 2 }
     public enum AppointmentStatus { Pending = 0, Completed = 1, Cancelled = 2 }
+    public record ServiceMaterialDTO(ServiceDTO service, MaterialDTO material);
+    public record RegisterService(ServiceDTO service, Dictionary<int, int> materialsId);
+    public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
+    public record LoginUserDTO(string Login, string Password);
+    public record AppointmentMaterialsChange(AppointmentDTO appointmentDTO, decimal priceChange);
     public static class EmployeeSession
     {
         public static int EmployeeId { get; set; }
@@ -19,9 +24,7 @@ namespace DoctorMomFrontend.Utils
             Role = null;
             ClinicsIds = new int[0];
         }
-    }
-    public record SessionInfo(int EmployeeId, string Role, int[] ClinicsId);
-    public record LoginUserDTO(string Login, string Password);
+    }   
     public class ClinicTableDTO 
     {
         public int Id { get; set; }
@@ -46,16 +49,18 @@ namespace DoctorMomFrontend.Utils
     public class AppointmentModelView : INotifyPropertyChanged
     {
         private AppointmentStatus _status;
-        public DateTime Date { get; set; }
         public AppointmentStatus Status
         {
             get => _status;
             set
             {
                 _status = value;
-                OnPropertyChanged(nameof(Status)); 
+                OnPropertyChanged(nameof(Status));
             }
         }
+        public DateTime Date { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
         public string ClientName { get; set; }
         public string EmployeeName { get; set; }
         public string ServiceName { get; set; }
@@ -65,7 +70,6 @@ namespace DoctorMomFrontend.Utils
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
     public class BonuseDTO
     {
@@ -85,6 +89,7 @@ namespace DoctorMomFrontend.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
+        public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class MaterialDTO 
     {
@@ -98,8 +103,7 @@ namespace DoctorMomFrontend.Utils
         public int ClinicId { get; set; }
         public string ClinicAddress { get; set; }
     }
-    public record ServiceMaterialDTO(ServiceDTO service, MaterialDTO material);
-    public record RegisterService(ServiceDTO service, Dictionary<int, int> materialsId);
+    
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }
@@ -118,6 +122,14 @@ namespace DoctorMomFrontend.Utils
         public int ClinicId { get; set; }
         public string ClinicAddress { get; set; }
     }
+    public class AppointmentMaterialDTO 
+    {
+        public int AppointmentId { get; set; }
+        public int MaterialId { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+    }
+
     public class EmployeeTableDTO
     {
         public int Id { get; set; }

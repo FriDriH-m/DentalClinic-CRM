@@ -132,14 +132,12 @@ namespace Web_API.Controllers
         {
             try
             {
-                // 1. Находим существующую услугу
                 var existingService = await _context.Services.FindAsync(id);
                 if (existingService == null)
                 {
                     return NotFound("Услуга не найдена");
                 }
 
-                // 2. Обновляем поля
                 existingService.Name = service.service.Name;
                 existingService.Description = service.service.Description;
                 existingService.DurationMinutes = service.service.DurationMinutes;
@@ -153,7 +151,6 @@ namespace Web_API.Controllers
                     .ToListAsync();
                 _context.ServiceMaterials.RemoveRange(oldLinks);
 
-                // 4. Добавляем новые связи
                 if (service.materialsId != null && service.materialsId.Count > 0)
                 {
                     foreach (var materialId in service.materialsId)

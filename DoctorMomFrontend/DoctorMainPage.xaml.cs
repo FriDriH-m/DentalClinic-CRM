@@ -34,6 +34,47 @@ namespace DoctorMomFrontend
                 EmployeeSession.Clear();
             };
         }
+        private void AppointmentMaterialsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            AppointmentModelView appointment = btn.DataContext as AppointmentModelView;
+            AppointmentDTO appointmentDTO = _allAppointmentsDTO
+                .Where(a => a.Date == appointment.Date)
+                .FirstOrDefault();
+
+            AddAppointmentMaterials window = new AddAppointmentMaterials(appointmentDTO);
+            window.ShowDialog();
+        }
+        private void StatusFilter_Checked(object sender, RoutedEventArgs e)
+        {
+            if (FilterAll.IsChecked == true)
+            {
+                ApplyFilter(null); 
+            }
+            else if (FilterPending.IsChecked == true)
+            {
+                ApplyFilter(AppointmentStatus.Pending); 
+            }
+            else if (FilterCompleted.IsChecked == true)
+            {
+                ApplyFilter(AppointmentStatus.Completed);
+            }
+            else if (FilterCanceled.IsChecked == true)
+            {
+                ApplyFilter(AppointmentStatus.Cancelled); 
+            }
+        }
+        private void ApplyFilter(AppointmentStatus? status)
+        {
+            if (_allAppointments.Count == 0) return;
+            List<AppointmentModelView> appointments = _allAppointments.Where(a => a.Status == status).ToList();
+            if (status == null)
+            {
+                AppointmentsListBox.ItemsSource = _allAppointments;
+                return;
+            }
+            AppointmentsListBox.ItemsSource = appointments;
+        }
         private async Task LoadServices(HttpClient client)
         {
             for (int i = 0; i < EmployeeSession.ClinicsIds.Length; i++)
@@ -78,7 +119,7 @@ namespace DoctorMomFrontend
                         {
                             _allAppointments.Add(
                                 new AppointmentModelView
-                                {                                    
+                                {
                                     ServiceName = _allAvailableServices
                                         .FirstOrDefault(s => s.Id == appointment.ServiceId)?.Name ?? "",
                                     Date = appointment.Date,

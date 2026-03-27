@@ -140,7 +140,7 @@ namespace DoctorMomFrontend
             ClientInfoPanel.Visibility = Visibility.Visible;
             var client = PatientsDataGrid.SelectedValue as ClientDTO;
 
-            ClientNameText.Text = client.FullName;
+            ClientNameText.Text = client.FullName ?? "";
             ClientPhoneText.Text = client.PhoneNumber;
             ClientEmailText.Text = client.Email;
             ClientNotesText.Text = client.Info;

@@ -14,6 +14,7 @@ namespace DoctorMomFrontend
     {
         private readonly string ApiUrl = "https://localhost:7141/api/";
         private List<ClientDTO> _allClients = new();
+        private Dictionary<int, int> _allBonuses = new();
         public ManagerClientsPage()
         {
             InitializeComponent();
@@ -46,7 +47,11 @@ namespace DoctorMomFrontend
         }
         private async void HistoryClient_Click(object sender, RoutedEventArgs e)
         {
+            Button button = sender as Button;
+            ClientDTO client = button.DataContext as ClientDTO;
 
+            ClientHistoryWindow historyClient = new ClientHistoryWindow(client);
+            historyClient.ShowDialog();
         }
         private async Task GetDataFromDB()
         {
@@ -58,6 +63,7 @@ namespace DoctorMomFrontend
                 InitData();
             }
         }
+
         private void InitData()
         {
             ClientsGrid.ItemsSource = _allClients;
@@ -67,9 +73,18 @@ namespace DoctorMomFrontend
             try
             {
                 var clientsResponse = await client.GetAsync(ApiUrl + "clients");
-                if (clientsResponse.IsSuccessStatusCode)
+                var bonusesResponse = await client.GetAsync(ApiUrl + "clients/bonuses");
+                if (clientsResponse.IsSuccessStatusCode && bonusesResponse.IsSuccessStatusCode)
                 {
                     _allClients = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>();
+
+                    _allBonuses = await bonusesResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
+
+                    foreach (var currentClient in _allClients)
+                    {
+                        if (!_allBonuses.ContainsKey(currentClient.Id)) currentClient.BonuseAmount = 0;
+                        else currentClient.BonuseAmount = _allBonuses[currentClient.Id];
+                    }
                 }
                 else
                 {

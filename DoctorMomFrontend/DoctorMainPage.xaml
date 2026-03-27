@@ -119,16 +119,27 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Расписание на сегодня" FontSize="26" FontWeight="Bold" Foreground="#01579B" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" x:Name="CurrentDoctorText" Text="👨‍️ Загрузка..." FontSize="16" FontWeight="SemiBold" Foreground="#455A64" VerticalAlignment="Center"/>
+                
             </Grid>
 
             <!-- Фильтры -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
                 <TextBlock Text="Фильтр:" VerticalAlignment="Center" FontSize="14" Foreground="#78909C" Margin="0,0,10,0"/>
-                <RadioButton x:Name="FilterAll" Content="Все" IsChecked="True" Margin="0,0,15,0" VerticalAlignment="Center" GroupName="StatusFilter"/>
-                <RadioButton x:Name="FilterPending" Content="Ожидают" Margin="0,0,15,0" VerticalAlignment="Center" GroupName="StatusFilter"/>
-                <RadioButton x:Name="FilterCompleted" Content="Завершены" Margin="0,0,15,0" VerticalAlignment="Center" GroupName="StatusFilter"/>
-                <RadioButton x:Name="FilterCanceled" Content="Отмененны" VerticalAlignment="Center" GroupName="StatusFilter"/>
+                <RadioButton x:Name="FilterAll" Content="Все" IsChecked="True" 
+                             Margin="0,0,15,0" VerticalAlignment="Center" 
+                             GroupName="StatusFilter" Checked="StatusFilter_Checked"/>
+
+                <RadioButton x:Name="FilterPending" Content="Ожидают" 
+                             Margin="0,0,15,0" VerticalAlignment="Center" 
+                             GroupName="StatusFilter" Checked="StatusFilter_Checked"/>
+
+                <RadioButton x:Name="FilterCompleted" Content="Завершены" 
+                             Margin="0,0,15,0" VerticalAlignment="Center" 
+                             GroupName="StatusFilter" Checked="StatusFilter_Checked"/>
+
+                <RadioButton x:Name="FilterCanceled" Content="Отменены" 
+                             VerticalAlignment="Center" 
+                             GroupName="StatusFilter" Checked="StatusFilter_Checked"/>
             </StackPanel>
 
             <!-- Список записей -->
@@ -139,7 +150,7 @@
 
                 <ListBox x:Name="AppointmentsListBox" 
                          Background="Transparent" 
-                         BorderThickness="0" ItemsSource="{Binding _allAppointments}"
+                         BorderThickness="0"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -188,7 +199,7 @@
                                         <Button x:Name="CancelButton" Content="✕ Отменить" Style="{StaticResource DangerButtonStyle}"
                                                 Tag="{Binding}" Click="CancelAppointmentButton_Click"/>
                                         <Button x:Name="MaterialsButton" Content="📦 Материалы" Style="{StaticResource PrimaryButtonStyle}"
-                                                Tag="{Binding}"/>
+                                                Tag="{Binding}" Click="AppointmentMaterialsButton_Click"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
