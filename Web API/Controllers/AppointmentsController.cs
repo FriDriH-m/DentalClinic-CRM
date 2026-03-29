@@ -62,9 +62,15 @@ namespace Web_API.Controllers
                 ))
                 .ToList();
 
-            
+            var doctorsSkills = _context.DoctorCategorySkills
+                .Where(c => c.CategoryId == service.CategoryId)
+                .Select(d => d.EmployeeId)
+                .ToList();
 
-            var result = freeDoctors.Select(e => new EmployeeTableDTO
+            var skilledFreeDoctors = freeDoctors
+                .Where(d => doctorsSkills.Contains(d.Id));
+
+            var result = skilledFreeDoctors.Select(e => new EmployeeTableDTO
             {
                 Id = e.Id,
                 FirstName = e.FirstName,

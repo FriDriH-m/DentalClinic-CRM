@@ -140,6 +140,9 @@
                 <RadioButton x:Name="FilterCanceled" Content="Отменены" 
                              VerticalAlignment="Center" 
                              GroupName="StatusFilter" Checked="StatusFilter_Checked"/>
+                <DatePicker x:Name="DateFilter" 
+                            Margin="20,0,0,0" VerticalAlignment="Center" 
+                            SelectedDateChanged="DateFilter_SelectedDateChanged"/>
             </StackPanel>
 
             <!-- Список записей -->

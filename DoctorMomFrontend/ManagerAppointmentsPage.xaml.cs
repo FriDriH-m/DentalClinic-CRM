@@ -140,10 +140,10 @@ namespace DoctorMomFrontend
             ClientInfoPanel.Visibility = Visibility.Visible;
             var client = PatientsDataGrid.SelectedValue as ClientDTO;
 
-            ClientNameText.Text = client.FullName ?? "";
-            ClientPhoneText.Text = client.PhoneNumber;
-            ClientEmailText.Text = client.Email;
-            ClientNotesText.Text = client.Info;
+            ClientNameText.Text = client?.FullName ?? "";
+            ClientPhoneText.Text = client?.PhoneNumber ?? "";
+            ClientEmailText.Text = client?.Email ?? "";
+            ClientNotesText.Text = client?.Info ?? "";
         }
         private async Task LoadClients(HttpClient client)
         {

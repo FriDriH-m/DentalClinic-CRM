@@ -19,6 +19,8 @@ namespace DoctorMomFrontend
         public ObservableCollection<AppointmentModelView> _allAppointments = new();
         private List<AppointmentDTO> _allAppointmentsDTO = new();
         private List<ServiceDTO> _allAvailableServices = new();
+        private DateTime _selectedtDate = DateTime.Today;
+        private AppointmentStatus? _selectedStatus = null;
         public DoctorMainPage()
         {
             InitializeComponent();
@@ -45,30 +47,43 @@ namespace DoctorMomFrontend
             AddAppointmentMaterials window = new AddAppointmentMaterials(appointmentDTO);
             window.ShowDialog();
         }
+        private void DateFilter_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DateFilter.SelectedDate == null) return;
+            _selectedtDate = DateFilter.SelectedDate.Value;
+            ApplyFilter();
+        }
         private void StatusFilter_Checked(object sender, RoutedEventArgs e)
         {
             if (FilterAll.IsChecked == true)
             {
-                ApplyFilter(null); 
+                _selectedStatus = null;
+                ApplyFilter(); 
             }
             else if (FilterPending.IsChecked == true)
             {
-                ApplyFilter(AppointmentStatus.Pending); 
+                _selectedStatus = AppointmentStatus.Pending;
+                ApplyFilter(); 
             }
             else if (FilterCompleted.IsChecked == true)
             {
-                ApplyFilter(AppointmentStatus.Completed);
+                _selectedStatus = AppointmentStatus.Completed;
+                ApplyFilter();
             }
             else if (FilterCanceled.IsChecked == true)
             {
-                ApplyFilter(AppointmentStatus.Cancelled); 
+                _selectedStatus = AppointmentStatus.Cancelled; 
+                ApplyFilter(); 
             }
         }
-        private void ApplyFilter(AppointmentStatus? status)
+        private void ApplyFilter()
         {
             if (_allAppointments.Count == 0) return;
-            List<AppointmentModelView> appointments = _allAppointments.Where(a => a.Status == status).ToList();
-            if (status == null)
+            List<AppointmentModelView> appointments = _allAppointments
+                .Where(a => a.Status == _selectedStatus)
+                .ToList();
+            appointments = appointments.Where(a => a.Date.Date == _selectedtDate.Date).ToList();
+            if (_selectedStatus == null)
             {
                 AppointmentsListBox.ItemsSource = _allAppointments;
                 return;
@@ -128,7 +143,8 @@ namespace DoctorMomFrontend
                             );
                         }
 
-                        AppointmentsListBox.ItemsSource = _allAppointments;
+                        var todayAppointments = _allAppointments.Where(a => a.Date.Date == DateTime.Today).ToList();
+                        AppointmentsListBox.ItemsSource = todayAppointments;
                     }
                     else MessageBox.Show("Не удалось загрузить записи");
                 }
