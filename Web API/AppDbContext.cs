@@ -22,6 +22,7 @@ namespace Web_API
         public DbSet<Models.ClinicEmployee> ClinicEmployees { get; set; }
         public DbSet<Models.DoctorMaterialAccess> DoctorMaterialAccesses { get; set; }
         public DbSet<Models.ServiceMaterials> ServiceMaterials { get; set; }
+        public DbSet<Models.Report> Reports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

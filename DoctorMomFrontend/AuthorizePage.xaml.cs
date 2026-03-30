@@ -44,7 +44,7 @@ namespace DoctorMomFrontend
                             "role_doctor" => new DoctorMainPage(),
                             "role_admin" => new AdminMainPage(),
                             "role_manager" => new ManagerMainPage(),
-                            "role_analyst" => new AnalystMainPage(),
+                            "role_analyst" => new AnalyticsDashboardPage(),
                             _ => null
                         };
 

@@ -176,8 +176,7 @@ namespace Web_API.Controllers
             }
         }
         [HttpPost("materials")]
-        public async Task<IActionResult> ChangeAppointmentMaterials(
-            [FromBody] AppointmentMaterialsChange appointmentChanges)
+        public async Task<IActionResult> ChangeAppointmentMaterials([FromBody] AppointmentMaterialsChange appointmentChanges)
         {
             try
             {
@@ -234,8 +233,7 @@ namespace Web_API.Controllers
             {
                 return BadRequest("Не удалось закрыть запись");
             }
-        }
-        
+        }        
         private async Task<IActionResult> FindAppointments(int clientId)
         {
             try

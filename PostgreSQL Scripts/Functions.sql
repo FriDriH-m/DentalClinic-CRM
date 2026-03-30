@@ -212,6 +212,23 @@ RETURNS TRIGGER AS $$
 	END
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION create_check()
+RETURNS TRIGGER AS $$
+	BEGIN
+		IF NEW."Status" = 1 THEN
+			INSERT INTO "Checks" ("Date", "TotalPrice", "Discount", "AppointmentId", "ClientId")
+			VALUES (
+				NOW(),
+				NEW."TotalPrice",
+				NEW."Discount",
+				NEW."Id",
+				NEW."ClientId"
+			);
+		END IF;
+		RETURN NEW;
+	END 
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE TRIGGER trg_clinic_employee_insert
 	AFTER INSERT OR DELETE ON "ClinicEmployees"
@@ -239,4 +256,7 @@ CREATE TRIGGER trg_remove_client_bonuses
 	FOR EACH ROW 
 	EXECUTE FUNCTION remove_client_bonuses();
 
-CREATE
+CREATE TRIGGER trg_create_check
+	AFTER UPDATE ON "Appointments"
+	FOR EACH ROW 
+	EXECUTE FUNCTION create_check();

@@ -107,7 +107,15 @@ namespace Web_API.Models
         public List<ServiceMaterials> Services { get; set; }
         public List<DoctorMaterialAccess> DoctorsAccess { get; set; }
     }
-
+    public class Report 
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string? Note { get; set; }
+        public string Author { get; set; }
+        public string Path { get; set; }
+        public DateTime Created { get; set; }
+    }
     public class Appointment
     {
         public int Id { get; set; }
@@ -126,11 +134,9 @@ namespace Web_API.Models
         public List<AppointmentService> AppointmentService { get; set; }
         public List<AppointmentMaterial> AppointmentMaterials { get; set; }
     }
-
     public class Check
     {
-        public int Id { get; set; }
-        public string CheckNumber { get; set; }        
+        public int Id { get; set; }       
         public DateTime Date { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
@@ -152,8 +158,7 @@ namespace Web_API.Models
         [ForeignKey("ClinicId")] public Clinic Clinic { get; set; }
         public List<AppointmentService> AppointmentService { get; set; }
         public List<ServiceMaterials> Materials { get; set; }
-    }
-    
+    }    
     public class ServiceMaterials 
     {
         public int Id { get; set; }
@@ -164,7 +169,6 @@ namespace Web_API.Models
         [ForeignKey("ServiceId")] public Service Service { get; set; }
         [ForeignKey("MaterialId")] public Material Material { get; set; }
     }
-
     public class DoctorMaterialAccess
     {
         public int Id { get; set; }

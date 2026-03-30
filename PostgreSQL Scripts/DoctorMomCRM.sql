@@ -14,6 +14,7 @@ SELECT * FROM "Appointments";
 SELECT * FROM "AppointmentMaterial";
 SELECT * FROM "Clients";
 SELECT * FROM "Clinics";
+SELECT * FROM "Checks";
 SELECT * FROM "Materials";
 SELECT * FROM "Services";
 SELECT * FROM "ServiceMaterials";
@@ -28,8 +29,6 @@ DELETE FROM "Appointments" AS a WHERE a."Id" IN (19);
 SELECT grantee, privilege_type 
 FROM information_schema.role_table_grants 
 WHERE table_name = 'Clinics';
-
-
 
 SELECT rolname, rolcanlogin, rolsuper, rolcreaterole 
 FROM pg_roles 

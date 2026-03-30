@@ -39,7 +39,7 @@
 
                 <Button x:Name="AppointmentsPageButton" Content="📅 Записи на прием" Style="{StaticResource MenuButtonStyle}"/>
                 <Button Content="👥 База пациентов" Style="{StaticResource MenuButtonStyle}" Background="#01579B"/>
-                <Button x:Name="BillingPageButton" Content="💳 Счета и оплата" Style="{StaticResource MenuButtonStyle}"/>
+                
 
                 <Separator Background="#26C6DA" Margin="0,20"/>
 

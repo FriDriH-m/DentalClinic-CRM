@@ -20,7 +20,7 @@ namespace DoctorMomFrontend
         private List<AppointmentDTO> _allAppointmentsDTO = new();
         private List<ServiceDTO> _allAvailableServices = new();
         private DateTime _selectedtDate = DateTime.Today;
-        private AppointmentStatus? _selectedStatus = null;
+        private AppointmentStatus? _selectedStatus;
         public DoctorMainPage()
         {
             InitializeComponent();
@@ -43,6 +43,11 @@ namespace DoctorMomFrontend
             AppointmentDTO appointmentDTO = _allAppointmentsDTO
                 .Where(a => a.Date == appointment.Date)
                 .FirstOrDefault();
+            if (appointmentDTO.Status != AppointmentStatus.Pending)
+            {
+                MessageBox.Show("Нельзя добавить материалы к закрытой записи");
+                return;
+            }
 
             AddAppointmentMaterials window = new AddAppointmentMaterials(appointmentDTO);
             window.ShowDialog();
@@ -85,7 +90,7 @@ namespace DoctorMomFrontend
             appointments = appointments.Where(a => a.Date.Date == _selectedtDate.Date).ToList();
             if (_selectedStatus == null)
             {
-                AppointmentsListBox.ItemsSource = _allAppointments;
+                AppointmentsListBox.ItemsSource = appointments;
                 return;
             }
             AppointmentsListBox.ItemsSource = appointments;
@@ -187,8 +192,6 @@ namespace DoctorMomFrontend
                         .Where(a => a.Date == appointment.Date)
                         .Select(a => a.Id)
                         .FirstOrDefault();
-
-                    MessageBox.Show(Convert.ToString(appointmentId));
 
                     var response = await client.PatchAsync(ApiUrl + "appointments/" + appointmentId + "/" + status, content);
                     if (response.IsSuccessStatusCode)

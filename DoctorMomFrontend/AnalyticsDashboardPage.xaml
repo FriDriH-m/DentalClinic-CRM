@@ -1,0 +1,584 @@
+﻿<Page x:Class="DoctorMomFrontend.AnalyticsDashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1400"
+      Title="Аналитика">
+
+    <Page.Resources>
+        <!-- Кнопки меню -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#01579B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Фильтры -->
+        <Style x:Key="FilterDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+
+        <Style x:Key="FilterComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="MinWidth" Value="140"/>
+        </Style>
+
+        <Style x:Key="FilterButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0277BD"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#01579B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- KPI Карточки -->
+        <Style x:Key="KPICardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.08"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Вкладки -->
+        <Style x:Key="AnalyticsTabItemStyle" TargetType="TabItem">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}" CornerRadius="8,8,0,0">
+                            <ContentPresenter ContentSource="Header"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="#01579B"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Заголовки колонок DataGrid -->
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="Foreground" Value="#01579B"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="#F0F8FF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ==================== ЛЕВОЕ МЕНЮ ==================== -->
+        <Border Grid.Column="0" Background="#0277BD" CornerRadius="0,20,20,0">
+            <StackPanel Margin="20">
+                <TextBlock Text="DoctorMom" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,0,0,30"/>
+
+                <TextBlock Text="АНАЛИТИКА" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Button Content="📊 Дашборд" Style="{StaticResource MenuButtonStyle}" Background="#01579B"/>
+                <Button x:Name="AppointmentsButton" Content="📅 Записи" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="ClientsButton" Content="👥 Пациенты" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="ChecksButton" Content="💳 Чеки" Style="{StaticResource MenuButtonStyle}"/>
+
+                <Separator Background="#26C6DA" Margin="0,20"/>
+
+                <TextBlock Text="ОТЧЁТЫ" Foreground="#B3E5FC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Button x:Name="ExportReportsButton" Content="📤 Экспорт отчётов" Style="{StaticResource MenuButtonStyle}"/>
+                <Button x:Name="SettingsButton" Content="⚙️ Настройки" Style="{StaticResource MenuButtonStyle}"/>
+
+                <Separator Background="#26C6DA" Margin="0,20"/>
+
+                <Button x:Name="LogoutButton" Content="Выход" Style="{StaticResource MenuButtonStyle}" Foreground="#FFAB91"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== ОСНОВНАЯ ОБЛАСТЬ ==================== -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="25">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок -->
+                <TextBlock Grid.Row="0" Text="Панель аналитики" FontSize="28" FontWeight="Bold" 
+                           Foreground="#01579B" Margin="0,0,0,20"/>
+
+                <!-- ==================== ФИЛЬТРЫ ==================== -->
+                <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="20" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.08"/>
+                    </Border.Effect>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Фильтры данных" FontSize="16" FontWeight="SemiBold" 
+                                   Foreground="#0277BD" Margin="0,0,0,15"/>
+
+                        <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                            <!-- Период -->
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Период:" VerticalAlignment="Center" Foreground="#555" FontWeight="SemiBold"/>
+                                <DatePicker x:Name="FromDateFilter" Style="{StaticResource FilterDatePickerStyle}"/>
+                                <TextBlock Text="—" VerticalAlignment="Center" Foreground="#999" Margin="5,0"/>
+                                <DatePicker x:Name="ToDateFilter" Style="{StaticResource FilterDatePickerStyle}"/>
+                            </StackPanel>
+
+                            <!-- Клиника -->
+                            <ComboBox x:Name="ClinicFilter" Style="{StaticResource FilterComboBoxStyle}">
+                                <ComboBoxItem Content="Все клиники" IsSelected="True"/>
+                                <ComboBoxItem Content="Клиника №1"/>
+                                <ComboBoxItem Content="Клиника №2"/>
+                            </ComboBox>
+
+                            <!-- Врач -->
+                            <ComboBox x:Name="DoctorFilter" Style="{StaticResource FilterComboBoxStyle}">
+                                <ComboBoxItem Content="Все врачи" IsSelected="True"/>
+                                <ComboBoxItem Content="Иванов А.А."/>
+                                <ComboBoxItem Content="Петрова Б.Б."/>
+                            </ComboBox>
+
+                            <!-- Услуга -->
+                            <ComboBox x:Name="ServiceFilter" Style="{StaticResource FilterComboBoxStyle}">
+                                <ComboBoxItem Content="Все услуги" IsSelected="True"/>
+                                <ComboBoxItem Content="Консультация"/>
+                                <ComboBoxItem Content="Процедура"/>
+                            </ComboBox>
+
+                            <!-- Статус приёма -->
+                            <ComboBox x:Name="AppointmentStatusFilter" Style="{StaticResource FilterComboBoxStyle}">
+                                <ComboBoxItem Content="Все статусы" IsSelected="True"/>
+                                <ComboBoxItem Content="Запланирован"/>
+                                <ComboBoxItem Content="Завершён"/>
+                                <ComboBoxItem Content="Отменён"/>
+                            </ComboBox>
+
+                            <!-- Категория клиента -->
+                            <ComboBox x:Name="ClientCategoryFilter" Style="{StaticResource FilterComboBoxStyle}">
+                                <ComboBoxItem Content="Все категории" IsSelected="True"/>
+                                <ComboBoxItem Content="Regular"/>
+                                <ComboBoxItem Content="Loyal"/>
+                                <ComboBoxItem Content="Premium"/>
+                            </ComboBox>
+
+                            <!-- Кнопки действий -->
+                            <Button x:Name="ApplyFilterButton" Content="🔍 Применить" Style="{StaticResource FilterButtonStyle}"/>
+                            <Button x:Name="ResetFilterButton" Content="🔄 Сбросить" Style="{StaticResource FilterButtonStyle}" Background="#90A4AE"/>
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <!-- ==================== KPI КАРТОЧКИ ==================== -->
+                <WrapPanel Grid.Row="2" Margin="0,0,0,20">
+                    <!-- Выручка -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="💰 Выручка" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="TotalRevenueText" Text="0 ₽" FontSize="24" FontWeight="Bold" Foreground="#2E7D32" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="RevenueChangeText" Text="+0% к прошлому периоду" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Количество приёмов -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="📅 Приёмов" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="TotalAppointmentsText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#0277BD" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="AppointmentsChangeText" Text="+0% к прошлому периоду" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Завершённые -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="✅ Завершено" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="CompletedAppointmentsText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#43A047" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="CompletionRateText" Text="0% успеха" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Отменённые -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="❌ Отменено" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="CancelledAppointmentsText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#E57373" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="CancellationRateText" Text="0% отмен" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Средний чек -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="💳 Средний чек" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="AverageCheckText" Text="0 ₽" FontSize="24" FontWeight="Bold" Foreground="#FF9800" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="AverageCheckChangeText" Text="+0% к прошлому" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Новые клиенты -->
+                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                        <StackPanel>
+                            <TextBlock Text="👥 Новые клиенты" FontSize="13" Foreground="#999"/>
+                            <TextBlock x:Name="NewClientsCountText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#00ACC1" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="RepeatClientsRateText" Text="0% повторных" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+
+                <!-- ==================== ВКЛАДКИ С ДАННЫМИ ==================== -->
+                <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.08"/>
+                    </Border.Effect>
+
+                    <TabControl x:Name="AnalyticsTabs">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem" BasedOn="{StaticResource AnalyticsTabItemStyle}"/>
+                        </TabControl.Resources>
+
+                        <!-- Вкладка: Общая сводка -->
+                        <TabItem Header="📈 Общая сводка">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Топ показатели -->
+                                <WrapPanel Grid.Row="0" Margin="0,0,0,20">
+                                    <Border Background="#E3F2FD" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
+                                        <StackPanel>
+                                            <TextBlock Text="🏆 Топ-услуга" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="TopServiceNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock x:Name="TopServiceRevenueText" Text="0 ₽" FontSize="13" Foreground="#2E7D32"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Background="#E8F5E9" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
+                                        <StackPanel>
+                                            <TextBlock Text="👨‍⚕️ Топ-врач" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="TopDoctorNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock x:Name="TopDoctorAppointmentsText" Text="0 приёмов" FontSize="13" Foreground="#43A047"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Background="#FFF3E0" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
+                                        <StackPanel>
+                                            <TextBlock Text="📊 Клиник активно" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="ActiveClinicsCountText" Text="0" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock Text="за выбранный период" FontSize="13" Foreground="#EF6C00"/>
+                                        </StackPanel>
+                                    </Border>
+                                </WrapPanel>
+
+                                <!-- График динамики (placeholder) -->
+                                <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="8" Padding="15" 
+                                        BorderBrush="#E0E0E0" BorderThickness="1" MinHeight="300">
+                                    <Grid>
+                                        <TextBlock Text="📉 Динамика по дням/неделям" FontSize="14" FontWeight="SemiBold" 
+                                                   Foreground="#666" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="[Здесь будет график — используйте LiveCharts или OxyPlot]" 
+                                                   FontSize="12" Foreground="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Финансы -->
+                        <TabItem Header="💰 Финансы">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="ExportFinanceButton" Content="📤 Экспорт в Excel"
+                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <DataGrid x:Name="FinanceDataGrid" Grid.Row="1" AutoGenerateColumns="False"
+                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
+                                    </DataGrid.ColumnHeaderStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Дата" Binding="{Binding Date}" Width="100"/>
+                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicName}" Width="150"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="120"/>
+                                        <DataGridTextColumn Header="Скидки" Binding="{Binding Discounts}" Width="100"/>
+                                        <DataGridTextColumn Header="Чеков" Binding="{Binding ChecksCount}" Width="80"/>
+                                        <DataGridTextColumn Header="Средний чек" Binding="{Binding AverageCheck}" Width="110"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Услуги -->
+                        <TabItem Header="🏥 Услуги">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="ExportServicesButton" Content="📤 Экспорт в Excel"
+                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <DataGrid x:Name="ServicesDataGrid" Grid.Row="1" AutoGenerateColumns="False"
+                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
+                                    </DataGrid.ColumnHeaderStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Услуга" Binding="{Binding ServiceName}" Width="200"/>
+                                        <DataGridTextColumn Header="Категория" Binding="{Binding CategoryName}" Width="130"/>
+                                        <DataGridTextColumn Header="Оказаний" Binding="{Binding Count}" Width="90"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="110"/>
+                                        <DataGridTextColumn Header="Средняя длительность" Binding="{Binding AvgDuration}" Width="130"/>
+                                        <DataGridTextColumn Header="Расход материалов" Binding="{Binding MaterialsCost}" Width="130"/>
+                                        <DataGridTextColumn Header="Прибыльность" Binding="{Binding Profitability}" Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Врачи -->
+                        <TabItem Header="👨‍⚕️ Врачи">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="ExportDoctorsButton" Content="📤 Экспорт в Excel"
+                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <DataGrid x:Name="DoctorsDataGrid" Grid.Row="1" AutoGenerateColumns="False"
+                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
+                                    </DataGrid.ColumnHeaderStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Врач" Binding="{Binding FullName}" Width="200"/>
+                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicName}" Width="130"/>
+                                        <DataGridTextColumn Header="Приёмов" Binding="{Binding AppointmentsCount}" Width="90"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="110"/>
+                                        <DataGridTextColumn Header="Средняя длительность" Binding="{Binding AvgDuration}" Width="130"/>
+                                        <DataGridTextColumn Header="Завершено" Binding="{Binding CompletedRate}" Width="100"/>
+                                        <DataGridTextColumn Header="Отменено" Binding="{Binding CancelledCount}" Width="90"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Клиенты -->
+                        <TabItem Header="👥 Клиенты">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="ExportClientsButton" Content="📤 Экспорт в Excel"
+                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <DataGrid x:Name="ClientsDataGrid" Grid.Row="1" AutoGenerateColumns="False"
+                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
+                                    </DataGrid.ColumnHeaderStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="200"/>
+                                        <DataGridTextColumn Header="Телефон" Binding="{Binding PhoneNumber}" Width="130"/>
+                                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="100"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
+                                        <DataGridTextColumn Header="Всего приёмов" Binding="{Binding TotalAppointments}" Width="110"/>
+                                        <DataGridTextColumn Header="Потрачено" Binding="{Binding MoneySpent}" Width="110"/>
+                                        <DataGridTextColumn Header="Последний визит" Binding="{Binding LastVisit}" Width="120"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Материалы -->
+                        <TabItem Header="📦 Материалы">
+                            <Grid Margin="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button x:Name="ExportMaterialsButton" Content="📤 Экспорт в Excel"
+                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <DataGrid x:Name="MaterialsDataGrid" Grid.Row="1" AutoGenerateColumns="False"
+                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
+                                    </DataGrid.ColumnHeaderStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Материал" Binding="{Binding Name}" Width="200"/>
+                                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="130"/>
+                                        <DataGridTextColumn Header="Остаток" Binding="{Binding Stock}" Width="90"/>
+                                        <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" Width="80"/>
+                                        <DataGridTextColumn Header="Закупка" Binding="{Binding PurchasePrice}" Width="100"/>
+                                        <DataGridTextColumn Header="Расход за период" Binding="{Binding Consumed}" Width="110"/>
+                                        <DataGridTextColumn Header="Сертификат" Binding="{Binding Certificate}" Width="120"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Вкладка: Экспорт -->
+                        <TabItem Header="📤 Экспорт">
+                            <Grid Margin="30">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="📊 Полный экспорт отчёта" FontSize="22" FontWeight="SemiBold" 
+                                               Foreground="#01579B" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+                                    <Border Background="#E3F2FD" CornerRadius="12" Padding="30" Margin="0,0,0,30" MaxWidth="500">
+                                        <StackPanel>
+                                            <TextBlock Text="Будет сформирован Excel-файл со следующими листами:" 
+                                                       FontSize="14" Foreground="#555" Margin="0,0,0,15"/>
+
+                                            <StackPanel Margin="20,0">
+                                                <TextBlock Text="• Summary — общая сводка и KPI" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                                <TextBlock Text="• Finance — финансовые данные по дням" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                                <TextBlock Text="• Services — статистика по услугам" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                                <TextBlock Text="• Doctors — эффективность врачей" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                                <TextBlock Text="• Clients — данные по клиентам" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                                <TextBlock Text="• Materials — расход материалов" FontSize="13" Foreground="#333" Margin="0,5"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Button x:Name="ExportFullReportButton" Content="📥 Выгрузить полный отчёт"
+                                            Padding="25,12" Background="#0277BD" Foreground="White" FontWeight="Bold" 
+                                            FontSize="15" Cursor="Hand" BorderThickness="0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+
+                                    <TextBlock x:Name="ExportStatusText" Text="" FontSize="12" Foreground="#666" 
+                                               HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

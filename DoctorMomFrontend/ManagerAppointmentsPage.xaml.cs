@@ -99,15 +99,6 @@ namespace DoctorMomFrontend
                         ClinicId = EmployeeSession.ClinicsIds[0],
                         EmployeeId = _selectedDoctor.Id
                     };
-
-                    MessageBox.Show($"ServiceId:{serviceId} " +
-                        $"ClientId:{clientDTO.Id} " +
-                        $"DoctorId:{_selectedDoctor.Id}" +
-                        $"ClinicId:{EmployeeSession.ClinicsIds[0]}" +
-                        $"TotalPrice:{totalPrice - discount}" +
-                        $"{discount}" +
-                        $"{endTime}" +
-                        $"{date}");
                     newAppointment.Date = DateTime.SpecifyKind(newAppointment.Date, DateTimeKind.Utc);
                     newAppointment.EndTime = DateTime.SpecifyKind(newAppointment.EndTime, DateTimeKind.Utc);
 
