@@ -20,10 +20,10 @@ namespace Web_API.Utils
         public DateTime Date { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
-        public string ClientName { get; set; }
-        public string EmployeeName { get; set; }
-        public string ServiceName { get; set; }
-        public AppointmentDTO Appointment { get; set; }
+        public int ClientId { get; set; }
+        public int EmployeeId { get; set; }
+        public int ServiceId { get; set; }
+        public int? AppointmentId { get; set; }
     }
     public class MaterialDTO
     {
@@ -95,10 +95,6 @@ namespace Web_API.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
-        public ClientDTO Client { get; set; }
-        public ServiceDTO Service { get; set; }
-        public EmployeeTableDTO Employee { get; set; }
-        public ClinicTableDTO Clinic { get; set; }
         public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class EmployeeTableDTO

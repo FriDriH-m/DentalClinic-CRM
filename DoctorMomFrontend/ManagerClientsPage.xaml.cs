@@ -14,6 +14,7 @@ namespace DoctorMomFrontend
     {
         private readonly string ApiUrl = "https://localhost:7141/api/";
         private List<ClientDTO> _allClients = new();
+        private List<CheckDTO> _allChecks = new();
         private Dictionary<int, int> _allBonuses = new();
         public ManagerClientsPage()
         {
@@ -74,17 +75,24 @@ namespace DoctorMomFrontend
             {
                 var clientsResponse = await client.GetAsync(ApiUrl + "clients");
                 var bonusesResponse = await client.GetAsync(ApiUrl + "clients/bonuses");
-                if (clientsResponse.IsSuccessStatusCode && bonusesResponse.IsSuccessStatusCode)
+                var checksResponse = await client.GetAsync(ApiUrl + "appointments/checks");
+                if (clientsResponse.IsSuccessStatusCode && checksResponse.IsSuccessStatusCode &&
+                    bonusesResponse.IsSuccessStatusCode)
                 {
                     _allClients = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>();
-
+                    _allChecks = await checksResponse.Content.ReadFromJsonAsync<List<CheckDTO>>();
                     _allBonuses = await bonusesResponse.Content.ReadFromJsonAsync<Dictionary<int, int>>();
 
                     foreach (var currentClient in _allClients)
                     {
                         if (!_allBonuses.ContainsKey(currentClient.Id)) currentClient.BonuseAmount = 0;
                         else currentClient.BonuseAmount = _allBonuses[currentClient.Id];
+
+                        currentClient.MoneySpent = (int)_allChecks
+                            .Where(c => c.ClientId == currentClient.Id)
+                            .Sum(c => c.TotalPrice);
                     }
+
                 }
                 else
                 {

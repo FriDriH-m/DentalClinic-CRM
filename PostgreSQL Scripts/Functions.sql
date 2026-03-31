@@ -224,6 +224,16 @@ RETURNS TRIGGER AS $$
 				NEW."Id",
 				NEW."ClientId"
 			);
+
+			UPDATE "Materials" m
+			SET "Count" = m."Count" - sub.total
+			FROM (
+			    SELECT "MaterialId", SUM("Quantity") as total
+			    FROM "AppointmentMaterial"
+			    WHERE "AppointmentId" = NEW."Id"
+			    GROUP BY "MaterialId"
+			) sub
+			WHERE m."Id" = sub."MaterialId";
 		END IF;
 		RETURN NEW;
 	END 
@@ -256,7 +266,7 @@ CREATE TRIGGER trg_remove_client_bonuses
 	FOR EACH ROW 
 	EXECUTE FUNCTION remove_client_bonuses();
 
-CREATE TRIGGER trg_create_check
+CREATE OR REPLACE TRIGGER trg_create_check
 	AFTER UPDATE ON "Appointments"
 	FOR EACH ROW 
 	EXECUTE FUNCTION create_check();

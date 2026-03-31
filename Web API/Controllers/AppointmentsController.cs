@@ -36,19 +36,13 @@ namespace Web_API.Controllers
                         Date = c.Date,
                         TotalPrice = c.TotalPrice,
                         Discount = c.Discount,
-                        Appointment = new AppointmentDTO
-                        {
-                            Id = c.Appointment.Id,
-                            Date = c.Appointment.Date,
-                            EndTime = c.Appointment.EndTime,
-                            Status = c.Appointment.Status,
-                            TotalPrice = c.Appointment.TotalPrice,
-                            Discount = c.Appointment.Discount,
-                            IsClosed = c.Appointment.IsClosed,
-                            ClientId = c.Appointment.ClientId,
-                            ClinicId = c.Appointment.ClinicId,
-                            EmployeeId = c.Appointment.EmployeeId
-                        }
+                        ClientId = c.ClientId,
+                        AppointmentId = c.AppointmentId,
+                        EmployeeId = c.Appointment.EmployeeId,
+                        ServiceId = _context.AppointmentService
+                                    .Where(s => s.AppointmentId == c.AppointmentId)
+                                    .Select(s => s.ServiceId)
+                                    .FirstOrDefault()
                     })
                     .ToListAsync();
 
@@ -280,98 +274,27 @@ namespace Web_API.Controllers
                     appointmentsQuery = appointmentsQuery.Where(a => a.ClientId == clientId);
                 }
 
-                if (!haveAccess)
-                {
-                    var appointments = await _context.Appointments
-                        .Select(a => new AppointmentDTO
-                        {
-                            Id = a.Id,
-                            Date = a.Date,
-                            EndTime = a.EndTime,
-                            Status = a.Status,
-                            TotalPrice = a.TotalPrice,
-                            Discount = a.Discount,
-                            IsClosed = a.IsClosed,
-                            ClientId = a.ClientId,
-                            ClinicId = a.ClinicId,
-                            EmployeeId = a.EmployeeId,
-                            ServiceId = _context.AppointmentService
-                                        .Where(s => s.AppointmentId == a.Id)
-                                        .Select(s => s.ServiceId)
-                                        .FirstOrDefault(),
-                        })
-                        .ToListAsync();
+                var appointments = await appointmentsQuery
+                       .Select(a => new AppointmentDTO
+                       {
+                           Id = a.Id,
+                           Date = a.Date,
+                           EndTime = a.EndTime,
+                           Status = a.Status,
+                           TotalPrice = a.TotalPrice,
+                           Discount = a.Discount,
+                           IsClosed = a.IsClosed,
+                           ClientId = a.ClientId,
+                           ClinicId = a.ClinicId,
+                           EmployeeId = a.EmployeeId,
+                           ServiceId = _context.AppointmentService
+                                       .Where(s => s.AppointmentId == a.Id)
+                                       .Select(s => s.ServiceId)
+                                       .FirstOrDefault(),
+                       })
+                       .ToListAsync();
 
-                    return Ok(appointments);
-                }
-
-                var appointmentsList = await appointmentsQuery
-                    .Select(a => new AppointmentDTO
-                    {
-                        Id = a.Id,
-                        Date = a.Date,
-                        EndTime = a.EndTime,
-                        Status = a.Status,
-                        TotalPrice = a.TotalPrice,
-                        Discount = a.Discount,
-                        IsClosed = a.IsClosed,
-                        ClientId = a.ClientId,
-                        ClinicId = a.ClinicId,
-                        ServiceId = _context.AppointmentService
-                                        .Where(s => s.AppointmentId == a.Id)
-                                        .Select(s => s.ServiceId)
-                                        .FirstOrDefault(),
-                        EmployeeId = a.EmployeeId,
-                        Client = new ClientDTO
-                        {
-                            Id = a.Client.Id,
-                            FirstName = a.Client.FirstName,
-                            SecondName = a.Client.SecondName,
-                            PhoneNumber = a.Client.PhoneNumber,
-                            Email = a.Client.Email,
-                            Info = a.Client.Info,
-                            Status = a.Client.Status,
-                            MoneySpent = a.Client.MoneySpent
-                        },
-                        Clinic = new ClinicTableDTO
-                        {
-                            Id = a.Clinic.Id,
-                            Location = a.Clinic.Location,
-                            PostalCode = a.Clinic.PostalCode,
-                            PhoneNumber = a.Clinic.PhoneNumber,
-                            EmployeesCount = a.Clinic.EmployeesCount
-                        },
-                        Service = _context.AppointmentService
-                            .Where(s => s.AppointmentId == a.Id)
-                                            .Select(s => new ServiceDTO
-                                            {
-                                                Id = s.Service.Id,
-                                                Name = s.Service.Name,
-                                                Description = s.Service.Description,
-                                                DurationMinutes = s.Service.DurationMinutes,
-                                                BasePrice = s.Service.BasePrice,
-                                                CategoryName = s.Service.CategoryName,
-                                                CategoryId = s.Service.CategoryId,
-                                                ClinicId = s.Service.ClinicId,
-                                                ClinicAddress = ""
-                                            })
-                                            .FirstOrDefault() ?? new ServiceDTO(),
-                        Employee = new EmployeeTableDTO
-                        {
-                            Id = a.Employee.Id,
-                            FirstName = a.Employee.FirstName,
-                            SecondName = a.Employee.SecondName,
-                            PhoneNumber = a.Employee.PhoneNumber,
-                            Specialization = a.Employee.Specialization,
-                            Info = a.Employee.Info,
-                            IsCertified = a.Employee.IsCertified ?? false,
-                            Age = a.Employee.Age,
-                            Salary = a.Employee.Salary,
-                            Experience = a.Employee.Experience,
-                        }
-                    }).ToListAsync();
-
-                return Ok(appointmentsList);
+                return Ok(appointments);
             }
             catch (Exception ex)
             {

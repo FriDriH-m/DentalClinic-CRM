@@ -18,13 +18,13 @@ SELECT * FROM "Checks";
 SELECT * FROM "Materials";
 SELECT * FROM "Services";
 SELECT * FROM "ServiceMaterials";
-SELECT * FROM "Employees";
+SELECT * FROM "Employees";	
 SELECT * FROM "ClinicEmployees";
 SELECT * FROM "DoctorCategorySkills";
 SELECT * FROM "DoctorMaterialAccesses";
 SELECT * FROM "Bonuses";
 
-DELETE FROM "Appointments" AS a WHERE a."Id" IN (19);
+DELETE FROM "Appointments" AS a WHERE a."Id" IN (18, 17, 22, 23, 24, 25);
 
 SELECT grantee, privilege_type 
 FROM information_schema.role_table_grants 

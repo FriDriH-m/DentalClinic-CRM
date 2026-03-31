@@ -17,6 +17,11 @@ namespace Web_API.Configurations
             builder.HasIndex(c => c.ClientId);
             builder.HasIndex(c => c.AppointmentId);
             builder.HasIndex(c => c.Date);
+
+            builder.HasOne(c => c.Appointment)
+                 .WithMany()
+                 .HasForeignKey(c => c.AppointmentId)
+                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -21,7 +21,19 @@ namespace DoctorMomFrontend.Utils
             Role = null;
             ClinicsIds = new int[0];
         }
-    }   
+    }
+    public class ClinicFinancialMV 
+    {
+        public string ClinicAddress { get; set; }
+        public decimal Revenue { get; set; }
+        public int AvarageSalary { get; set; }
+        public int AvarageCheck { get; set; }
+        public decimal BonusesDiscount { get; set; }
+        public int EmployeeCount { get; set; }
+        public int ChecksCount { get; set; }
+
+    }
+
     public class ClinicTableDTO 
     {
         public int Id { get; set; }
@@ -86,10 +98,6 @@ namespace DoctorMomFrontend.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
-        public ClientDTO Client { get; set; }
-        public ServiceDTO Service { get; set; }
-        public EmployeeTableDTO Employee { get; set; }
-        public ClinicTableDTO Clinic { get; set; }
         public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class MaterialDTO 
@@ -156,9 +164,9 @@ namespace DoctorMomFrontend.Utils
         public DateTime Date { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
-        public string ClientName { get; set; }
-        public string EmployeeName { get; set; }
-        public string ServiceName { get; set; }
-        public AppointmentDTO Appointment { get; set; }
+        public int ClientId { get; set; }
+        public int EmployeeId { get; set; }
+        public int ServiceId { get; set; }
+        public int? AppointmentId { get; set; }
     }
 }

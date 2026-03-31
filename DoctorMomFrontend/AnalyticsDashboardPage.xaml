@@ -182,35 +182,28 @@
 
                             <!-- Клиника -->
                             <ComboBox x:Name="ClinicFilter" Style="{StaticResource FilterComboBoxStyle}">
-                                <ComboBoxItem Content="Все клиники" IsSelected="True"/>
-                                <ComboBoxItem Content="Клиника №1"/>
-                                <ComboBoxItem Content="Клиника №2"/>
                             </ComboBox>
 
                             <!-- Врач -->
                             <ComboBox x:Name="DoctorFilter" Style="{StaticResource FilterComboBoxStyle}">
-                                <ComboBoxItem Content="Все врачи" IsSelected="True"/>
-                                <ComboBoxItem Content="Стоматолог-хирург"/>
-                                <ComboBoxItem Content="Ортопед"/>
+                                
                             </ComboBox>
 
                             <!-- Услуга -->
                             <ComboBox x:Name="ServiceFilter" Style="{StaticResource FilterComboBoxStyle}">
-                                <ComboBoxItem Content="Все услуги" IsSelected="True"/>
-                                <ComboBoxItem Content="Консультация"/>
-                                <ComboBoxItem Content="Процедура"/>
+                                
                             </ComboBox>
 
                             <!-- Статус приёма -->
                             <ComboBox x:Name="AppointmentStatusFilter" Style="{StaticResource FilterComboBoxStyle}">
-                                <ComboBoxItem Content="Все статусы" IsSelected="True"/>
-                                <ComboBoxItem Content="Запланирован"/>
-                                <ComboBoxItem Content="Завершён"/>
-                                <ComboBoxItem Content="Отменён"/>
+                                <ComboBoxItem Content="Все статусы" IsSelected="True" Tag="null"/>
+                                <ComboBoxItem Content="Запланирован" Tag="0"/>
+                                <ComboBoxItem Content="Завершён" Tag="1"/>
+                                <ComboBoxItem Content="Отменён" Tag="2"/>
                             </ComboBox>
                             <!-- Категория клиента -->
                             <ComboBox x:Name="ClientCategoryFilter" Style="{StaticResource FilterComboBoxStyle}">
-                                <ComboBoxItem Content="Все категории" IsSelected="True"/>
+                                <ComboBoxItem Content="Все клиенты" IsSelected="True"/>
                                 <ComboBoxItem Content="Regular"/>
                                 <ComboBoxItem Content="Loyal"/>
                                 <ComboBoxItem Content="Premium"/>
@@ -231,7 +224,7 @@
                         <StackPanel>
                             <TextBlock Text="💰 Выручка" FontSize="13" Foreground="#999"/>
                             <TextBlock x:Name="TotalRevenueText" Text="0 ₽" FontSize="24" FontWeight="Bold" Foreground="#2E7D32" Margin="0,8,0,0"/>
-                            <TextBlock x:Name="RevenueChangeText" Text="+0% к прошлому периоду" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
+                            <TextBlock x:Name="RevenueChangeText" Text="Текущий месяц" FontSize="11" Foreground="#666" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -272,7 +265,7 @@
                     </Border>
 
                     <!-- Новые клиенты -->
-                    <Border Style="{StaticResource KPICardStyle}" Width="220">
+                    <Border Style="{StaticResource KPICardStyle}" Width="220" Visibility="Collapsed">
                         <StackPanel>
                             <TextBlock Text="👥 Новые клиенты" FontSize="13" Foreground="#999"/>
                             <TextBlock x:Name="NewClientsCountText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#00ACC1" Margin="0,8,0,0"/>
@@ -304,9 +297,16 @@
                                 <WrapPanel Grid.Row="0" Margin="0,0,0,20">
                                     <Border Background="#E3F2FD" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
                                         <StackPanel>
-                                            <TextBlock Text="🏆 Топ-услуга" FontSize="12" Foreground="#666"/>
-                                            <TextBlock x:Name="TopServiceNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
-                                            <TextBlock x:Name="TopServiceRevenueText" Text="0 ₽" FontSize="13" Foreground="#2E7D32"/>
+                                            <TextBlock Text="🏆 Самая популярная услуга" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="MostFrequentServiceNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock x:Name="MostFrequentServiceCountText" Text="0" FontSize="13" Foreground="#08569c"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#E3F2FD" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
+                                        <StackPanel>
+                                            <TextBlock Text="🏆 Самая прибыльная услуга" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="MostProfitableServiceNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock x:Name="MostProfitableServiceRevenueText" Text="0 ₽" FontSize="13" Foreground="#2E7D32"/>
                                         </StackPanel>
                                     </Border>
 
@@ -320,8 +320,8 @@
 
                                     <Border Background="#FFF3E0" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
                                         <StackPanel>
-                                            <TextBlock Text="📊 Клиник активно" FontSize="12" Foreground="#666"/>
-                                            <TextBlock x:Name="ActiveClinicsCountText" Text="0" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
+                                            <TextBlock Text="📊 Самая загруженная клиника" FontSize="12" Foreground="#666"/>
+                                            <TextBlock x:Name="ActiveClinicsCountText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
                                             <TextBlock Text="за выбранный период" FontSize="13" Foreground="#EF6C00"/>
                                         </StackPanel>
                                     </Border>
@@ -367,13 +367,14 @@
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Дата" Binding="{Binding Date}" Width="100"/>
-                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicName}" Width="150"/>
-                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="120"/>
-                                        <DataGridTextColumn Header="Скидки" Binding="{Binding Discounts}" Width="100"/>
-                                        <DataGridTextColumn Header="Чеков" Binding="{Binding ChecksCount}" Width="80"/>
-                                        <DataGridTextColumn Header="Средний чек" Binding="{Binding AverageCheck}" Width="110"/>
+                                    <DataGrid.Columns>                                        
+                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicAddress}" Width="1.8*"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="0.8*"/>
+                                        <DataGridTextColumn Header="Скидки по бонусам" Binding="{Binding BonusesDiscount}" Width="*"/>
+                                        <DataGridTextColumn Header="Кол-во сотрудников" Binding="{Binding EmployeeCount}" Width="*"/>
+                                        <DataGridTextColumn Header="Средняя ЗП сотрудника" Binding="{Binding AvarageSalary}" Width="1.1*"/>
+                                        <DataGridTextColumn Header="Чеков" Binding="{Binding ChecksCount}" Width="0.5*"/>
+                                        <DataGridTextColumn Header="Средний чек" Binding="{Binding AvarageCheck}" Width="0.8*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>

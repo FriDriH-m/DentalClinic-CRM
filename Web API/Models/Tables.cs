@@ -140,9 +140,9 @@ namespace Web_API.Models
         public DateTime Date { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
-        public int AppointmentId { get; set; }
+        public int? AppointmentId { get; set; }
         public int ClientId { get; set; }
-        [ForeignKey("AppointmentId")] public Appointment Appointment { get; set; }
+        [ForeignKey("AppointmentId")] public Appointment? Appointment { get; set; }
         [ForeignKey("ClientId")] public Client Client { get; set; }
     }
     public class Service
