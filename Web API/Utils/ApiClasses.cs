@@ -14,6 +14,17 @@ namespace Web_API.Utils
         public string ClinicLocation { get; set; }
     }
     public record AppointmentMaterialsChange(AppointmentDTO appointmentDTO, decimal priceChange);
+    public class CheckDTO
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
+        public string ClientName { get; set; }
+        public string EmployeeName { get; set; }
+        public string ServiceName { get; set; }
+        public AppointmentDTO Appointment { get; set; }
+    }
     public class MaterialDTO
     {
         public int Id { get; set; }
@@ -84,6 +95,7 @@ namespace Web_API.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
+        
         public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class EmployeeTableDTO

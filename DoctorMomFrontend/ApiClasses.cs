@@ -99,8 +99,7 @@ namespace DoctorMomFrontend.Utils
         public int Count { get; set; }
         public int ClinicId { get; set; }
         public string ClinicAddress { get; set; }
-    }
-    
+    }    
     public class RegistrationUserDTO
     {
         public EmployeeTableDTO EmployeeTableDTO { get; set; }
@@ -126,7 +125,6 @@ namespace DoctorMomFrontend.Utils
         public int Quantity { get; set; }
         public decimal Price { get; set; }
     }
-
     public class EmployeeTableDTO
     {
         public int Id { get; set; }
@@ -147,5 +145,16 @@ namespace DoctorMomFrontend.Utils
         public string DbUsername { get; set; }
         public string DbPassword { get; set; }
         public string Role { get; set; }
+    }
+    public class CheckDTO 
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
+        public string ClientName { get; set; }
+        public string EmployeeName { get; set; }
+        public string ServiceName { get; set; }
+        public AppointmentDTO Appointment { get; set; }
     }
 }

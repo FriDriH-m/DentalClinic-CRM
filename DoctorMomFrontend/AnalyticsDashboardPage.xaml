@@ -112,7 +112,7 @@
 
     <Grid Background="#F0F8FF">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -165,12 +165,13 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Text="Фильтры данных" FontSize="16" FontWeight="SemiBold" 
                                    Foreground="#0277BD" Margin="0,0,0,15"/>
 
-                        <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                        <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
                             <!-- Период -->
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Период:" VerticalAlignment="Center" Foreground="#555" FontWeight="SemiBold"/>
@@ -189,8 +190,8 @@
                             <!-- Врач -->
                             <ComboBox x:Name="DoctorFilter" Style="{StaticResource FilterComboBoxStyle}">
                                 <ComboBoxItem Content="Все врачи" IsSelected="True"/>
-                                <ComboBoxItem Content="Иванов А.А."/>
-                                <ComboBoxItem Content="Петрова Б.Б."/>
+                                <ComboBoxItem Content="Стоматолог-хирург"/>
+                                <ComboBoxItem Content="Ортопед"/>
                             </ComboBox>
 
                             <!-- Услуга -->
@@ -207,7 +208,6 @@
                                 <ComboBoxItem Content="Завершён"/>
                                 <ComboBoxItem Content="Отменён"/>
                             </ComboBox>
-
                             <!-- Категория клиента -->
                             <ComboBox x:Name="ClientCategoryFilter" Style="{StaticResource FilterComboBoxStyle}">
                                 <ComboBoxItem Content="Все категории" IsSelected="True"/>
@@ -215,7 +215,8 @@
                                 <ComboBoxItem Content="Loyal"/>
                                 <ComboBoxItem Content="Premium"/>
                             </ComboBox>
-
+                        </WrapPanel>
+                        <WrapPanel Grid.Row="2">        
                             <!-- Кнопки действий -->
                             <Button x:Name="ApplyFilterButton" Content="🔍 Применить" Style="{StaticResource FilterButtonStyle}"/>
                             <Button x:Name="ResetFilterButton" Content="🔄 Сбросить" Style="{StaticResource FilterButtonStyle}" Background="#90A4AE"/>
@@ -488,7 +489,6 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="200"/>
                                         <DataGridTextColumn Header="Телефон" Binding="{Binding PhoneNumber}" Width="130"/>
-                                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="100"/>
                                         <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
                                         <DataGridTextColumn Header="Всего приёмов" Binding="{Binding TotalAppointments}" Width="110"/>
                                         <DataGridTextColumn Header="Потрачено" Binding="{Binding MoneySpent}" Width="110"/>

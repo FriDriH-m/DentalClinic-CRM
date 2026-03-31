@@ -3,8 +3,6 @@ using DoctorMomFrontend.Utils;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,9 +16,9 @@ namespace DoctorMomFrontend
         private readonly string ApiUrl = "https://localhost:7141/api/";
         private List<ServiceDTO> _allAvailableServices = new();
         private List<ClientDTO> _allClients = new();
-        private Dictionary<int, int> _allBonuses = new();
-        public ObservableCollection<ServiceDTO> Services { get; set; } = new();
+        private Dictionary<int, int> _allBonuses = new();        
         private EmployeeTableDTO _selectedDoctor;
+        public ObservableCollection<ServiceDTO> Services { get; set; } = new();
         public ManagerAppointmentsPage()
         {
             InitializeComponent();

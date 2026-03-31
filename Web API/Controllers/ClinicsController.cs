@@ -102,7 +102,7 @@ namespace Web_API.Controllers
             }            
         }
         [HttpGet("services")]
-        public async Task<IActionResult> GetAllServices(int clinicId)
+        public async Task<IActionResult> GetAllServices(int? clinicId)
         {
             try
             {               

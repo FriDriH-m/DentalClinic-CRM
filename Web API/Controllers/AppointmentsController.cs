@@ -24,6 +24,41 @@ namespace Web_API.Controllers
         {
             return await FindAppointments(0);
         }
+        [HttpGet("checks")]
+        public async Task<IActionResult> GetChecks()
+        {
+            try
+            {
+                var checks = await _context.Checks
+                    .Select(c => new CheckDTO
+                    {
+                        Id = c.Id,
+                        Date = c.Date,
+                        TotalPrice = c.TotalPrice,
+                        Discount = c.Discount,
+                        Appointment = new AppointmentDTO
+                        {
+                            Id = c.Appointment.Id,
+                            Date = c.Appointment.Date,
+                            EndTime = c.Appointment.EndTime,
+                            Status = c.Appointment.Status,
+                            TotalPrice = c.Appointment.TotalPrice,
+                            Discount = c.Appointment.Discount,
+                            IsClosed = c.Appointment.IsClosed,
+                            ClientId = c.Appointment.ClientId,
+                            ClinicId = c.Appointment.ClinicId,
+                            EmployeeId = c.Appointment.EmployeeId
+                        }
+                    })
+                    .ToListAsync();
+
+                return Ok(checks);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("free_doctors")]
         public async Task<IActionResult> GetFreeDoctorsAsync([FromQuery] DateTime datetime, [FromQuery] int serviceId)
         {
