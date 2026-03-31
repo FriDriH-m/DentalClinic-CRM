@@ -95,7 +95,10 @@ namespace Web_API.Utils
         public int ClinicId { get; set; }
         public int EmployeeId { get; set; }
         public int ServiceId { get; set; }
-        
+        public ClientDTO Client { get; set; }
+        public ServiceDTO Service { get; set; }
+        public EmployeeTableDTO Employee { get; set; }
+        public ClinicTableDTO Clinic { get; set; }
         public Dictionary<int, int>? MaterialsId { get; set; }
     }
     public class EmployeeTableDTO

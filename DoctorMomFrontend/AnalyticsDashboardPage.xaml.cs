@@ -13,7 +13,7 @@ namespace DoctorMomFrontend
     {
         private readonly string _apiUrl = "https://localhost:7141/api/";
         private List<CheckDTO> _checksData;
-        private List<AppointmentModelView> _appointmentsData;
+        private List<AppointmentDTO> _appointmentsData;
         private List<ServiceDTO> _servicesData;
         private List<ClientDTO> _clientsData;
         public AnalyticsDashboardPage()
@@ -48,17 +48,7 @@ namespace DoctorMomFrontend
                     _checksData = await checksResponse.Content.ReadFromJsonAsync<List<CheckDTO>>() ?? new();
                     _servicesData = await servicesResponse.Content.ReadFromJsonAsync<List<ServiceDTO>>() ?? new();
                     _clientsData = await clientsResponse.Content.ReadFromJsonAsync<List<ClientDTO>>() ?? new();
-
-                    _appointmentsData = await appointmentsResponse.Content.ReadFromJsonAsync<List<AppointmentDTO>>()
-                        .ContinueWith(t => t.Result?.Select(a => new AppointmentModelView
-                        {
-                            Date = a.Date,
-                            Discount = a.Discount,
-                            Status = (AppointmentStatus)a.Status,
-                            TotalPrice = a.TotalPrice,
-                            ServiceName = _servicesData.FirstOrDefault(s => s.Id == a.ServiceId)?.Name ?? "Не найдено"
-                            ,
-                        }).ToList()) ?? new();
+                    _appointmentsData = await appointmentsResponse.Content.ReadFromJsonAsync<List<AppointmentDTO>>() ?? new();
                 }
                 else
                 {
@@ -75,6 +65,10 @@ namespace DoctorMomFrontend
         private async Task LoadStatistic(HttpClient client)
         {
             TotalRevenueText.Text = _checksData.Sum(c => c.TotalPrice).ToString("C");
+            TotalAppointmentsText.Text = _appointmentsData.Count.ToString();
+            CompletedAppointmentsText.Text = _appointmentsData.Count(a => a.Status == AppointmentStatus.Completed).ToString();
+            CancelledAppointmentsText.Text = _appointmentsData.Count(a => a.Status == AppointmentStatus.Cancelled).ToString();
+            AverageCheckText.Text = _checksData.Count > 0 ? (_checksData.Average(c => c.TotalPrice)).ToString("C") : "N/A";
         }
     }
 }

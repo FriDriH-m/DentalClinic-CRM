@@ -15,14 +15,14 @@ namespace Web_API.Controllers
             _context = context;
         }
         [HttpGet("{clientId}")]
-        public async Task<IActionResult> GetClientAppointments(int clientId)
+        public async Task<IActionResult> GetClientAppointments(int clientId, [FromQuery] bool haveAccess = true)
         {
-            return await FindAppointments(clientId);
+            return await FindAppointments(clientId, haveAccess);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllAppointments()
+        public async Task<IActionResult> GetAllAppointments([FromQuery] bool haveAccess = true)
         {
-            return await FindAppointments(0);
+            return await FindAppointments(0, haveAccess);
         }
         [HttpGet("checks")]
         public async Task<IActionResult> GetChecks()
@@ -269,7 +269,7 @@ namespace Web_API.Controllers
                 return BadRequest("Не удалось закрыть запись");
             }
         }        
-        private async Task<IActionResult> FindAppointments(int clientId)
+        private async Task<IActionResult> FindAppointments(int clientId, bool haveAccess)
         {
             try
             {
@@ -279,7 +279,32 @@ namespace Web_API.Controllers
                 {
                     appointmentsQuery = appointmentsQuery.Where(a => a.ClientId == clientId);
                 }
-                
+
+                if (!haveAccess)
+                {
+                    var appointments = await _context.Appointments
+                        .Select(a => new AppointmentDTO
+                        {
+                            Id = a.Id,
+                            Date = a.Date,
+                            EndTime = a.EndTime,
+                            Status = a.Status,
+                            TotalPrice = a.TotalPrice,
+                            Discount = a.Discount,
+                            IsClosed = a.IsClosed,
+                            ClientId = a.ClientId,
+                            ClinicId = a.ClinicId,
+                            EmployeeId = a.EmployeeId,
+                            ServiceId = _context.AppointmentService
+                                        .Where(s => s.AppointmentId == a.Id)
+                                        .Select(s => s.ServiceId)
+                                        .FirstOrDefault(),
+                        })
+                        .ToListAsync();
+
+                    return Ok(appointments);
+                }
+
                 var appointmentsList = await appointmentsQuery
                     .Select(a => new AppointmentDTO
                     {
@@ -297,8 +322,54 @@ namespace Web_API.Controllers
                                         .Select(s => s.ServiceId)
                                         .FirstOrDefault(),
                         EmployeeId = a.EmployeeId,
-                    })
-                    .ToListAsync();
+                        Client = new ClientDTO
+                        {
+                            Id = a.Client.Id,
+                            FirstName = a.Client.FirstName,
+                            SecondName = a.Client.SecondName,
+                            PhoneNumber = a.Client.PhoneNumber,
+                            Email = a.Client.Email,
+                            Info = a.Client.Info,
+                            Status = a.Client.Status,
+                            MoneySpent = a.Client.MoneySpent
+                        },
+                        Clinic = new ClinicTableDTO
+                        {
+                            Id = a.Clinic.Id,
+                            Location = a.Clinic.Location,
+                            PostalCode = a.Clinic.PostalCode,
+                            PhoneNumber = a.Clinic.PhoneNumber,
+                            EmployeesCount = a.Clinic.EmployeesCount
+                        },
+                        Service = _context.AppointmentService
+                            .Where(s => s.AppointmentId == a.Id)
+                                            .Select(s => new ServiceDTO
+                                            {
+                                                Id = s.Service.Id,
+                                                Name = s.Service.Name,
+                                                Description = s.Service.Description,
+                                                DurationMinutes = s.Service.DurationMinutes,
+                                                BasePrice = s.Service.BasePrice,
+                                                CategoryName = s.Service.CategoryName,
+                                                CategoryId = s.Service.CategoryId,
+                                                ClinicId = s.Service.ClinicId,
+                                                ClinicAddress = ""
+                                            })
+                                            .FirstOrDefault() ?? new ServiceDTO(),
+                        Employee = new EmployeeTableDTO
+                        {
+                            Id = a.Employee.Id,
+                            FirstName = a.Employee.FirstName,
+                            SecondName = a.Employee.SecondName,
+                            PhoneNumber = a.Employee.PhoneNumber,
+                            Specialization = a.Employee.Specialization,
+                            Info = a.Employee.Info,
+                            IsCertified = a.Employee.IsCertified ?? false,
+                            Age = a.Employee.Age,
+                            Salary = a.Employee.Salary,
+                            Experience = a.Employee.Experience,
+                        }
+                    }).ToListAsync();
 
                 return Ok(appointmentsList);
             }

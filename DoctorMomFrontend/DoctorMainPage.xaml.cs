@@ -129,7 +129,7 @@ namespace DoctorMomFrontend
 
                 try
                 {
-                    var response = await client.GetAsync(ApiUrl + "appointments");
+                    var response = await client.GetAsync(ApiUrl + "appointments?haveAccess=false");
                     if (response.IsSuccessStatusCode)
                     {
                         var appointments = await response.Content.ReadFromJsonAsync<List<AppointmentDTO>>();
