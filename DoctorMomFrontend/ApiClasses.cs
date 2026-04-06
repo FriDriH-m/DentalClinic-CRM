@@ -26,14 +26,42 @@ namespace DoctorMomFrontend.Utils
     {
         public string ClinicAddress { get; set; }
         public decimal Revenue { get; set; }
-        public int AvarageSalary { get; set; }
+        public int Salary { get; set; }
         public int AvarageCheck { get; set; }
         public decimal BonusesDiscount { get; set; }
         public int EmployeeCount { get; set; }
         public int ChecksCount { get; set; }
 
     }
-
+    public class ServiceModelView 
+    {
+        public string Name { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public int Revenue { get; set; }
+        public string TopClinic { get; set; }
+    }
+    public class DoctorModelView 
+    { 
+        public string FullName { get; set; }
+        public string ClinicLocation { get; set; }
+        public int AppointmentCount { get; set; }
+        public int Revenue { get; set; }
+        public int Salary { get; set; }
+        public int CompletedRate { get; set; }
+        public int CancelledRate { get; set; }
+    }
+    public class ClientModelView 
+    {
+        public string FullName { get; set; }
+        public ClientStatus Status { get; set; }
+        public int MoneySpent { get; set; }
+        public int BonuseSpent { get; set; }
+        public int AppointmentsCount { get; set; }
+        public int CancelledAppointments { get; set; }
+        public int CompletedAppointments { get; set; }
+        public DateTime LastVisit { get; set; }
+    }
     public class ClinicTableDTO 
     {
         public int Id { get; set; }
@@ -150,6 +178,7 @@ namespace DoctorMomFrontend.Utils
         public int Age { get; set; }
         public int Salary { get; set; }
         public int Experience { get; set; }
+        public int ClinicId { get; set; }
         public string DbUsername { get; set; }
     }
     public class DatabaseUserDTO 

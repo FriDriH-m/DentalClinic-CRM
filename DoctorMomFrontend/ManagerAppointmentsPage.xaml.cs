@@ -104,6 +104,7 @@ namespace DoctorMomFrontend
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Запись создана");
+                        NavigationService.GoBack();
                     }
                     else
                     {

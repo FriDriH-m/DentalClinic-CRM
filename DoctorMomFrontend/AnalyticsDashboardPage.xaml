@@ -280,7 +280,9 @@
                         <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.08"/>
                     </Border.Effect>
 
-                    <TabControl x:Name="AnalyticsTabs">
+                    <TabControl x:Name="AnalyticsTabs" 
+                                SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                                >
                         <TabControl.Resources>
                             <Style TargetType="TabItem" BasedOn="{StaticResource AnalyticsTabItemStyle}"/>
                         </TabControl.Resources>
@@ -312,7 +314,7 @@
 
                                     <Border Background="#E8F5E9" CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
                                         <StackPanel>
-                                            <TextBlock Text="👨‍⚕️ Топ-врач" FontSize="12" Foreground="#666"/>
+                                            <TextBlock Text="👨‍️ Топ-врач" FontSize="12" Foreground="#666"/>
                                             <TextBlock x:Name="TopDoctorNameText" Text="—" FontSize="16" FontWeight="SemiBold" Foreground="#01579B" Margin="0,4,0,0"/>
                                             <TextBlock x:Name="TopDoctorAppointmentsText" Text="0 приёмов" FontSize="13" Foreground="#43A047"/>
                                         </StackPanel>
@@ -329,18 +331,18 @@
 
                                 <!-- График динамики (placeholder) -->
                                 <Border Grid.Row="1" Background="#FAFAFA" CornerRadius="8" Padding="15" 
-                                        BorderBrush="#E0E0E0" BorderThickness="1" MinHeight="300">
+                    BorderBrush="#E0E0E0" BorderThickness="1" MinHeight="300">
                                     <Grid>
                                         <TextBlock Text="📉 Динамика по дням/неделям" FontSize="14" FontWeight="SemiBold" 
-                                                   Foreground="#666" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                               Foreground="#666" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                                         <TextBlock Text="[Здесь будет график — используйте LiveCharts или OxyPlot]" 
-                                                   FontSize="12" Foreground="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                               FontSize="12" Foreground="#999" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Grid>
                                 </Border>
                             </Grid>
                         </TabItem>
 
-                        <!-- Вкладка: Финансы -->
+                        <!-- Вкладка: Финансы (БЕЗ ИЗМЕНЕНИЙ) -->
                         <TabItem Header="💰 Финансы">
                             <Grid Margin="20">
                                 <Grid.RowDefinitions>
@@ -350,8 +352,8 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                                     <Button x:Name="ExportFinanceButton" Content="📤 Экспорт в Excel"
-                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
-                                            Cursor="Hand" BorderThickness="0">
+                        Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                        Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="8"/>
@@ -361,18 +363,18 @@
                                 </StackPanel>
 
                                 <DataGrid x:Name="FinanceDataGrid" Grid.Row="1" AutoGenerateColumns="False"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
-                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                      GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                      RowHeight="38" FontSize="13" HeadersVisibility="Column">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
-                                    <DataGrid.Columns>                                        
+                                    <DataGrid.Columns>
                                         <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicAddress}" Width="1.8*"/>
                                         <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="0.8*"/>
                                         <DataGridTextColumn Header="Скидки по бонусам" Binding="{Binding BonusesDiscount}" Width="*"/>
                                         <DataGridTextColumn Header="Кол-во сотрудников" Binding="{Binding EmployeeCount}" Width="*"/>
-                                        <DataGridTextColumn Header="Средняя ЗП сотрудника" Binding="{Binding AvarageSalary}" Width="1.1*"/>
+                                        <DataGridTextColumn Header="Траты на ЗП" Binding="{Binding Salary}" Width="1.1*"/>
                                         <DataGridTextColumn Header="Чеков" Binding="{Binding ChecksCount}" Width="0.5*"/>
                                         <DataGridTextColumn Header="Средний чек" Binding="{Binding AvarageCheck}" Width="0.8*"/>
                                     </DataGrid.Columns>
@@ -390,8 +392,8 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                                     <Button x:Name="ExportServicesButton" Content="📤 Экспорт в Excel"
-                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
-                                            Cursor="Hand" BorderThickness="0">
+                        Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                        Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="8"/>
@@ -401,20 +403,18 @@
                                 </StackPanel>
 
                                 <DataGrid x:Name="ServicesDataGrid" Grid.Row="1" AutoGenerateColumns="False"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
-                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                      GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                      RowHeight="38" FontSize="13" HeadersVisibility="Column">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Услуга" Binding="{Binding ServiceName}" Width="200"/>
-                                        <DataGridTextColumn Header="Категория" Binding="{Binding CategoryName}" Width="130"/>
-                                        <DataGridTextColumn Header="Оказаний" Binding="{Binding Count}" Width="90"/>
-                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="110"/>
-                                        <DataGridTextColumn Header="Средняя длительность" Binding="{Binding AvgDuration}" Width="130"/>
-                                        <DataGridTextColumn Header="Расход материалов" Binding="{Binding MaterialsCost}" Width="130"/>
-                                        <DataGridTextColumn Header="Прибыльность" Binding="{Binding Profitability}" Width="100"/>
+                                        <DataGridTextColumn Header="Услуга" Binding="{Binding Name}" Width="1.8*"/>
+                                        <DataGridTextColumn Header="Категория" Binding="{Binding CategoryName}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Оказаний" Binding="{Binding Count}" Width="0.6*"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="1*"/>
+                                        <DataGridTextColumn Header="Топ-клиника" Binding="{Binding TopClinic}" Width="2*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -430,8 +430,8 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                                     <Button x:Name="ExportDoctorsButton" Content="📤 Экспорт в Excel"
-                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
-                                            Cursor="Hand" BorderThickness="0">
+                        Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                        Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="8"/>
@@ -448,13 +448,13 @@
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Врач" Binding="{Binding FullName}" Width="200"/>
-                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicName}" Width="130"/>
-                                        <DataGridTextColumn Header="Приёмов" Binding="{Binding AppointmentsCount}" Width="90"/>
-                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="110"/>
-                                        <DataGridTextColumn Header="Средняя длительность" Binding="{Binding AvgDuration}" Width="130"/>
-                                        <DataGridTextColumn Header="Завершено" Binding="{Binding CompletedRate}" Width="100"/>
-                                        <DataGridTextColumn Header="Отменено" Binding="{Binding CancelledCount}" Width="90"/>
+                                        <DataGridTextColumn Header="Врач" Binding="{Binding FullName}" Width="2*"/>
+                                        <DataGridTextColumn Header="Клиника" Binding="{Binding ClinicLocation}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Приёмов" Binding="{Binding AppointmentCount}" Width="*"/>
+                                        <DataGridTextColumn Header="Выручка" Binding="{Binding Revenue}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Зарплата" Binding="{Binding Salary}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Завершено" Binding="{Binding CompletedRate}" Width="1.2*"/>
+                                        <DataGridTextColumn Header="Отменено" Binding="{Binding CancelledCount}" Width="*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -470,8 +470,8 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                                     <Button x:Name="ExportClientsButton" Content="📤 Экспорт в Excel"
-                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
-                                            Cursor="Hand" BorderThickness="0">
+                        Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                        Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="8"/>
@@ -481,19 +481,21 @@
                                 </StackPanel>
 
                                 <DataGrid x:Name="ClientsDataGrid" Grid.Row="1" AutoGenerateColumns="False"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
-                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                      GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                      RowHeight="38" FontSize="13" HeadersVisibility="Column">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="200"/>
-                                        <DataGridTextColumn Header="Телефон" Binding="{Binding PhoneNumber}" Width="130"/>
-                                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
-                                        <DataGridTextColumn Header="Всего приёмов" Binding="{Binding TotalAppointments}" Width="110"/>
-                                        <DataGridTextColumn Header="Потрачено" Binding="{Binding MoneySpent}" Width="110"/>
-                                        <DataGridTextColumn Header="Последний визит" Binding="{Binding LastVisit}" Width="120"/>
+                                        <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2*"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="1.2*"/>
+                                        <DataGridTextColumn Header="Потрачено" Binding="{Binding MoneySpent}" Width="*"/>
+                                        <DataGridTextColumn Header="Потрачено бонусов" Binding="{Binding BonuseSpent}" Width="1.3*"/>
+                                        <DataGridTextColumn Header="Всего приёмов" Binding="{Binding AppointmentsCount}" Width="*"/>
+                                        <DataGridTextColumn Header="Отменено" Binding="{Binding CancelledAppointments}" Width="0.7*"/>
+                                        <DataGridTextColumn Header="Завершено" Binding="{Binding CompletedAppointments}" Width="0.7*"/>                                        
+                                        <DataGridTextColumn Header="Последний визит" Binding="{Binding LastVisit}" Width="1.5*"/>                                       
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -509,8 +511,8 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
                                     <Button x:Name="ExportMaterialsButton" Content="📤 Экспорт в Excel"
-                                            Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
-                                            Cursor="Hand" BorderThickness="0">
+                        Padding="15,8" Background="#43A047" Foreground="White" FontWeight="SemiBold" 
+                        Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="8"/>
@@ -520,20 +522,20 @@
                                 </StackPanel>
 
                                 <DataGrid x:Name="MaterialsDataGrid" Grid.Row="1" AutoGenerateColumns="False"
-                                          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
-                                          RowHeight="38" FontSize="13" HeadersVisibility="Column">
+                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                      GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F0F0F0"
+                      RowHeight="38" FontSize="13" HeadersVisibility="Column">
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style BasedOn="{StaticResource DataGridColumnHeaderStyle}" TargetType="DataGridColumnHeader"/>
                                     </DataGrid.ColumnHeaderStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Материал" Binding="{Binding Name}" Width="200"/>
-                                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="130"/>
-                                        <DataGridTextColumn Header="Остаток" Binding="{Binding Stock}" Width="90"/>
-                                        <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" Width="80"/>
-                                        <DataGridTextColumn Header="Закупка" Binding="{Binding PurchasePrice}" Width="100"/>
-                                        <DataGridTextColumn Header="Расход за период" Binding="{Binding Consumed}" Width="110"/>
-                                        <DataGridTextColumn Header="Сертификат" Binding="{Binding Certificate}" Width="120"/>
+                                        <DataGridTextColumn Header="Материал" Binding="{Binding Name}" Width="2*"/>
+                                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Остаток" Binding="{Binding Stock}" Width="*"/>
+                                        <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" Width="0.8*"/>
+                                        <DataGridTextColumn Header="Закупка" Binding="{Binding PurchasePrice}" Width="1.2*"/>
+                                        <DataGridTextColumn Header="Расход за период" Binding="{Binding Consumed}" Width="1.5*"/>
+                                        <DataGridTextColumn Header="Сертификат" Binding="{Binding Certificate}" Width="1.5*"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -544,12 +546,12 @@
                             <Grid Margin="30">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="📊 Полный экспорт отчёта" FontSize="22" FontWeight="SemiBold" 
-                                               Foreground="#01579B" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                           Foreground="#01579B" HorizontalAlignment="Center" Margin="0,0,0,30"/>
 
                                     <Border Background="#E3F2FD" CornerRadius="12" Padding="30" Margin="0,0,0,30" MaxWidth="500">
                                         <StackPanel>
                                             <TextBlock Text="Будет сформирован Excel-файл со следующими листами:" 
-                                                       FontSize="14" Foreground="#555" Margin="0,0,0,15"/>
+                                   FontSize="14" Foreground="#555" Margin="0,0,0,15"/>
 
                                             <StackPanel Margin="20,0">
                                                 <TextBlock Text="• Summary — общая сводка и KPI" FontSize="13" Foreground="#333" Margin="0,5"/>
@@ -563,8 +565,8 @@
                                     </Border>
 
                                     <Button x:Name="ExportFullReportButton" Content="📥 Выгрузить полный отчёт"
-                                            Padding="25,12" Background="#0277BD" Foreground="White" FontWeight="Bold" 
-                                            FontSize="15" Cursor="Hand" BorderThickness="0">
+                        Padding="25,12" Background="#0277BD" Foreground="White" FontWeight="Bold" 
+                        FontSize="15" Cursor="Hand" BorderThickness="0">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="10"/>
@@ -573,7 +575,7 @@
                                     </Button>
 
                                     <TextBlock x:Name="ExportStatusText" Text="" FontSize="12" Foreground="#666" 
-                                               HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                           HorizontalAlignment="Center" Margin="0,15,0,0"/>
                                 </StackPanel>
                             </Grid>
                         </TabItem>

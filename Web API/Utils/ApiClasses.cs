@@ -110,6 +110,7 @@ namespace Web_API.Utils
         public int Age { get; set; }
         public int Salary { get; set; }
         public int Experience { get; set; }
+        public int ClinicId { get; set; }
         public string DbUsername { get; set; }
     }
     public class DatabaseUserDTO

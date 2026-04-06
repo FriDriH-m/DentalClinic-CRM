@@ -24,6 +24,8 @@ SELECT * FROM "DoctorCategorySkills";
 SELECT * FROM "DoctorMaterialAccesses";
 SELECT * FROM "Bonuses";
 
+UPDATE "Employees" SET "Salary" = 130000 where "FirstName" = 'Пекин' ;
+
 DELETE FROM "Appointments" AS a WHERE a."Id" IN (18, 17, 22, 23, 24, 25);
 
 SELECT grantee, privilege_type 

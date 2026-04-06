@@ -38,7 +38,10 @@ namespace Web_API.Controllers
                     Age = e.Age,
                     Salary = e.Salary,
                     Experience = e.Experience,
-                    DbUsername = e.DbUsername
+                    DbUsername = e.DbUsername,
+                    ClinicId = e.ClinicEmployees
+                                    .FirstOrDefault(c => c.EmployeeId == e.Id)
+                                    .ClinicId
                 }).ToListAsync();
 
                 return Ok(doctors);
@@ -81,7 +84,10 @@ namespace Web_API.Controllers
                                 Age = e.Age,
                                 Salary = e.Salary,
                                 Experience = e.Experience,
-                                DbUsername = e.DbUsername
+                                DbUsername = e.DbUsername,
+                                ClinicId = e.ClinicEmployees
+                                    .FirstOrDefault(c => c.EmployeeId == e.Id)     
+                                    .ClinicId
                             })
                             .ToListAsync();
             return Ok(employees);

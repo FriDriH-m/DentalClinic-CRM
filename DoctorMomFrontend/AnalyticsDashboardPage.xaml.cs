@@ -1,6 +1,4 @@
 ﻿using DoctorMomFrontend.Utils;
-using Microsoft.VisualBasic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Windows;
@@ -8,12 +6,21 @@ using System.Windows.Controls;
 
 namespace DoctorMomFrontend
 {
+    public enum AnalyticsTab
+    {
+        GeneralSummary,
+        Financial,
+        Services,
+        Doctors,
+        Clients
+    }
     /// <summary>
     /// Логика взаимодействия для AnalystMainPage.xaml
     /// </summary>
     public partial class AnalyticsDashboardPage : Page
     {
         private readonly string _apiUrl = "https://localhost:7141/api/";
+        public TabItem SelectedTab;
         private DateTime _today = DateTime.Now;
         private List<CheckDTO> _checksData;
         private List<ClinicTableDTO> _clinicsData;
@@ -31,6 +38,32 @@ namespace DoctorMomFrontend
                 EmployeeSession.Clear();
             };
             Loaded += async (s, e) => await LoadAnalyticsDataAsync();
+            DataContext = this;
+            
+            //AnalyticsTabs.SelectionChanged +=
+        }
+
+        private async void AnalyticsTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AnalyticsTabs.SelectedItem is TabItem selectedTab)
+            {
+                SelectedTab = selectedTab;
+                if (selectedTab.Header.ToString() == "Общая сводка")
+                {
+                }
+                else if (selectedTab.Header.ToString() == "💰 Финансы")
+                {
+                }
+                else if (selectedTab.Header.ToString() == "🏥 Услуги")
+                {
+                }
+                else if (selectedTab.Header.ToString() == "👨‍⚕️ Врачи")
+                {
+                }
+                else if (selectedTab.Header.ToString() == "👥 Клиенты")
+                {
+                }
+            }
         }
 
         private async Task LoadAnalyticsDataAsync()
@@ -41,11 +74,84 @@ namespace DoctorMomFrontend
                 await LoadCommonStatistic(client);
                 await LoadFiltresData();
                 await LoadGeneralSummary();
-                await LoadFinancialData();
+                await LoadFinancialStatisticData();
+                await LoadServiceStatisticData();
+                await LoadDoctorsStatisticData();
+                await LoadClientsStatisticData();
             }
         }
 
-        private async Task LoadFinancialData()
+        private async Task LoadClientsStatisticData()
+        {
+            try 
+            { 
+                var clientsData = new List<ClientModelView>();
+                foreach (var client in _clientsData)
+                {
+                    var clientAppointments = _appointmentsData
+                            .Where(a => a.ClientId == client.Id);
+                    var clientData = new ClientModelView
+                    {
+                        FullName = client.FullName,
+                        BonuseSpent = (int)clientAppointments
+                            .Where(a => a.Status == AppointmentStatus.Completed)
+                            .Sum(a => a.Discount),
+                        AppointmentsCount = clientAppointments.Count(),
+                        CancelledAppointments = clientAppointments
+                            .Where(a => a.Status == AppointmentStatus.Cancelled)
+                            .Count(),
+                        CompletedAppointments = clientAppointments
+                            .Where(a => a.Status == AppointmentStatus.Completed)
+                            .Count(),
+                        MoneySpent = (int)clientAppointments
+                            .Where(a => a.Status == AppointmentStatus.Completed)
+                            .Sum(a => a.TotalPrice),
+                        LastVisit = clientAppointments
+                            .Where(a => a.Status == AppointmentStatus.Completed)
+                            .OrderByDescending(a => a.Date)
+                            .Select(a => a.Date)
+                            .FirstOrDefault()
+                    };
+                    clientsData.Add(clientData);
+                }
+                ClientsDataGrid.ItemsSource = clientsData;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузки статистики по клиентам: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private async Task LoadDoctorsStatisticData()
+        {
+            var doctorsData = new List<DoctorModelView>();
+
+            foreach (var doctor in _doctorsData)
+            {
+                var doctorAppointments = _appointmentsData
+                        .Where(a => a.EmployeeId == doctor.Id);
+                var doctorData = new DoctorModelView
+                {
+                    FullName = doctor.FullName,
+                    Salary = doctor.Salary,
+                    AppointmentCount = doctorAppointments.Count(),
+                    CancelledRate = doctorAppointments
+                        .Where(a => a.Status == AppointmentStatus.Cancelled)
+                        .Count(),
+                    CompletedRate = doctorAppointments
+                        .Where(a => a.Status == AppointmentStatus.Completed)
+                        .Count(),
+                    Revenue = (int)doctorAppointments
+                        .Where(a => a.Status == AppointmentStatus.Completed)
+                        .Sum(a => a.TotalPrice),
+                    ClinicLocation = _clinicsData
+                        .FirstOrDefault(c => c.Id == doctor.ClinicId)?
+                        .Location ?? ""
+                };
+                doctorsData.Add(doctorData);
+            }
+            DoctorsDataGrid.ItemsSource = doctorsData;
+        }
+        private async Task LoadFinancialStatisticData()
         {
             var clinicData = new List<ClinicFinancialMV>();
             foreach (var clinic in _clinicsData)
@@ -63,16 +169,40 @@ namespace DoctorMomFrontend
                     BonusesDiscount = clinicAppointments.Sum(a => a.Discount),
                     EmployeeCount = clinic.EmployeesCount,
                     AvarageCheck = (int)clinicAppointments.Average(c => c.TotalPrice),
-                    AvarageSalary = (int)_employeesData.Average(e => e.Salary),
+                    Salary = _employeesData.Sum(e => e.Salary),
                     ChecksCount = clinicAppointments.Count()
                 };
 
                 clinicData.Add(clinicInfo);
             }
             FinanceDataGrid.ItemsSource = clinicData;
-
         }
-
+        private async Task LoadServiceStatisticData()
+        {
+            var services = new List<ServiceModelView>();
+            var serviceAppointments = _appointmentsData
+                        .Where(a => a.Status == AppointmentStatus.Completed);
+            foreach (var service in _servicesData)
+            {
+                var currentServiceAppointments = serviceAppointments
+                        .Where(a => a.ServiceId == service.Id);
+                int topClinicId = currentServiceAppointments
+                        .GroupBy(a => a.ClinicId)
+                        .OrderByDescending(a => a.Count())
+                        .Select(s => s.Key)
+                        .FirstOrDefault();
+                var serviceData = new ServiceModelView
+                {
+                    Name = service.Name,
+                    CategoryName = service.CategoryName,
+                    Count = currentServiceAppointments.Count(),
+                    Revenue = (int)currentServiceAppointments.Sum(a => a.TotalPrice),
+                    TopClinic = _clinicsData.FirstOrDefault(c => c.Id == topClinicId)?.Location ?? ""
+                };
+                services.Add(serviceData);
+            }
+            ServicesDataGrid.ItemsSource = services;
+        }
         private async Task LoadAllData(HttpClient client)
         {
             try
@@ -133,11 +263,18 @@ namespace DoctorMomFrontend
         {
             try
             {
+                int completedAppointmentsCount = _appointmentsData.Count(a => a.Status == AppointmentStatus.Completed);
+                int cancelledAppointmentsCount = _appointmentsData.Count(a => a.Status == AppointmentStatus.Cancelled);
                 TotalRevenueText.Text = _checksData.Sum(c => c.TotalPrice).ToString("C");
                 TotalAppointmentsText.Text = _appointmentsData.Count.ToString();
-                CompletedAppointmentsText.Text = _appointmentsData.Count(a => a.Status == AppointmentStatus.Completed).ToString();
-                CancelledAppointmentsText.Text = _appointmentsData.Count(a => a.Status == AppointmentStatus.Cancelled).ToString();
+                CompletedAppointmentsText.Text = completedAppointmentsCount.ToString();
+                CancelledAppointmentsText.Text = cancelledAppointmentsCount.ToString();
                 AverageCheckText.Text = _checksData.Count > 0 ? (_checksData.Average(c => c.TotalPrice)).ToString("C") : "N/A";
+
+                float completePercent = (float)completedAppointmentsCount / (completedAppointmentsCount + cancelledAppointmentsCount);
+                float cancelPercent = (float)cancelledAppointmentsCount / (completedAppointmentsCount + cancelledAppointmentsCount);
+                CompletionRateText.Text = (completePercent * 100).ToString() + "%";
+                CancellationRateText.Text = (cancelPercent * 100).ToString() + "%";
             }
             catch (Exception ex)
             {
@@ -193,7 +330,7 @@ namespace DoctorMomFrontend
                     };
 
                 string clinicAddress = _clinicsData
-                    .FirstOrDefault(c => c.Id == mostBisiestClinicId).Location ?? "N/A";
+                    .FirstOrDefault(c => c.Id == mostBisiestClinicId)?.Location ?? "N/A";
 
                 decimal serviceRevenue = _checksData
                     .Where(c => c.ServiceId == mostProfitableServiceId)
